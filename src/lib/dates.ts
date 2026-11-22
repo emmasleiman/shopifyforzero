@@ -1,19 +1,17 @@
 /**
- * Turning relative phrases ("last week") into exact, inclusive date ranges.
+ * Turning vague dates ("last week", "this month") into exact, inclusive ranges.
  *
  * THE RULE
- *  - All dates are calendar dates (YYYY-MM-DD) in the store's local time zone.
- *  - Ranges are inclusive on both ends: { start: "2025-10-20", end: "2025-10-26" }.
- *  - Weeks run Monday through Sunday (ISO 8601).
- *  - "Last week" = the most recent COMPLETE Monday–Sunday week before the week
- *    that contains `today`. It never includes today and never a partial week.
- *      today Mon 2025-10-27 -> 2025-10-20 .. 2025-10-26
+ *  - All dates are calendar dates (YYYY-MM-DD) in the store's time zone.
+ *  - Ranges include both ends: { start: "2025-10-20", end: "2025-10-26" }.
+ *  - "today" is always passed in, never read from the clock, so the same
+ *    question always gives the same dates.
+ *  - "last week"  = the most recent COMPLETE Monday–Sunday week.
  *      today Tue 2025-10-28 -> 2025-10-20 .. 2025-10-26
- *      today Sun 2025-10-26 -> 2025-10-13 .. 2025-10-19  (this week isn't over yet)
- *  - "Last 7 days" is different on purpose: the 7 days ending yesterday.
- *  - "Last month" = the previous full calendar month.
- *  - `today` is always passed in explicitly so answers are reproducible. The
- *    app's default is STORE_TODAY (see storeToday()).
+ *      today Sun 2025-10-26 -> 2025-10-13 .. 2025-10-19 (this week isn't over yet)
+ *  - "this month" = the 1st of the current month through today.
+ *      today Tue 2025-10-28 -> 2025-10-01 .. 2025-10-28
+ *  - Returns are counted on the return date (see ./metrics).
  */
 
 export interface DateRange {
@@ -21,7 +19,7 @@ export interface DateRange {
   end: string;
 }
 
-export type RelativePeriod = "last_week" | "this_week" | "last_7_days" | "last_month";
+export type RelativePeriod = "last_week" | "this_month";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -40,7 +38,7 @@ const addDays = (s: string, n: number) => {
   return fmt(d);
 };
 
-/** Monday of the ISO week containing `date`. */
+/** Monday of the Monday–Sunday week containing `date`. */
 export function startOfWeek(date: string): string {
   const dow = parse(date).getUTCDay(); // 0 = Sunday
   return addDays(date, -((dow + 6) % 7));
@@ -53,22 +51,23 @@ export function resolvePeriod(period: RelativePeriod, today: string): DateRange 
       const thisMonday = startOfWeek(today);
       return { start: addDays(thisMonday, -7), end: addDays(thisMonday, -1) };
     }
-    case "this_week":
-      return { start: startOfWeek(today), end: today };
-    case "last_7_days":
-      return { start: addDays(today, -7), end: addDays(today, -1) };
-    case "last_month": {
-      const d = parse(today);
-      const firstOfThisMonth = fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)));
-      const end = addDays(firstOfThisMonth, -1);
-      return { start: `${end.slice(0, 7)}-01`, end };
-    }
+    case "this_month":
+      return { start: `${today.slice(0, 7)}-01`, end: today };
+    default:
+      throw new Error(`Unknown period "${period as string}". Known: last_week, this_month`);
   }
 }
 
 /** Number of calendar days in an inclusive range. */
 export function daysInRange({ start, end }: DateRange): number {
   return Math.round((parse(end).getTime() - parse(start).getTime()) / 86_400_000) + 1;
+}
+
+/** Every date from start to end, inclusive. */
+export function eachDay(start: string, end: string): string[] {
+  const out: string[] = [];
+  for (let d = start; d <= end; d = addDays(d, 1)) out.push(d);
+  return out;
 }
 
 /**

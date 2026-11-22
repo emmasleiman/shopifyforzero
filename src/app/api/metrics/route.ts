@@ -3,9 +3,10 @@ import { resolvePeriod, storeToday, type RelativePeriod } from "@/lib/dates";
 import { METRICS, runMetric } from "@/lib/metrics";
 
 /**
- * GET /api/metrics                                   -> metric catalog
- * GET /api/metrics?metric=returns&period=last_week&category=Outerwear
- * GET /api/metrics?metric=net_sales&start=2025-10-01&end=2025-10-31
+ * GET /api/metrics                                   -> metric catalog + store today
+ * GET /api/metrics?metric=returns_by_product_and_reason&period=last_week&category=Outerwear
+ * GET /api/metrics?metric=sales_by_day&period=this_month
+ * GET /api/metrics?metric=product_velocity&start=2025-10-01&end=2025-10-27
  */
 export function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams;
@@ -13,7 +14,8 @@ export function GET(req: NextRequest) {
   if (!metric) {
     return NextResponse.json({
       today: storeToday(),
-      metrics: METRICS.map(({ name, description, dateBasis, unit }) => ({ name, description, dateBasis, unit })),
+      periods: ["last_week", "this_month"],
+      metrics: METRICS.map(({ name, description, dateBasis }) => ({ name, description, dateBasis })),
     });
   }
   try {
