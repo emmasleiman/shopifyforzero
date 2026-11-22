@@ -1,6 +1,6 @@
 # Shopify merchant analytics chat (Zero University case project)
 
-Merchants ask questions about their store in plain language ("jakets returnd last wk"). A Claude model, called through OpenRouter, answers each question with **exactly one metric tool call over exact dates**. The answer is streamed back.
+Merchants ask questions about their store in plain language ("jakets returnd last wk"). A model called through OpenRouter answers each question with **exactly one metric tool call over exact dates**. The answer is streamed back.
 
 The project is built on the Shopify order history for May to October 2025. Read **[NOTES.md](NOTES.md)** for the decisions behind it.
 
@@ -12,14 +12,34 @@ cp .env.example .env.local      # then paste your OpenRouter key into OPENROUTER
 npm run dev                     # http://localhost:3000/chat
 ```
 
-Get a key at openrouter.ai → **Keys**. Create one for this project and give it a credit limit. Only the server reads the key, in `src/lib/chat.ts`. It isn't `NEXT_PUBLIC_`, so it never reaches the browser, and `.env.local` is git-ignored.
+Get a key at openrouter.ai → **Keys**. Create one for this project and give it a small credit limit. The default model is free, so the key costs nothing to use. Only the server reads the key, in `src/lib/chat.ts`. It isn't `NEXT_PUBLIC_`, so it never reaches the browser, and `.env.local` is git-ignored.
+
+## Model choice
+
+The default model is **`nvidia/nemotron-3.5-super-vl:free`** (NVIDIA Nemotron 3.5 Super, OpenRouter's free tier).
+
+**Why this model**
+- **The stage asks for a free OpenRouter model.** This keeps the project at zero cost.
+- **It supports tool calling,** which the whole design depends on. Not every free model does.
+- **It was the reliable free option when I tested.** I tried five free models that support tools with the same question, "jakets returnd last wk":
+  - **Gemma 4 31B and Gemma 4 26B** (Google) were my first choice. Both were "temporarily rate-limited upstream" for every request. That limit is on Google's side, shared by everyone, not on our key.
+  - **ERNIE 5.5 Flash** (Baidu) was also rate-limited upstream.
+  - **Nemotron 3 Ultra** (NVIDIA) answered correctly but took about 17 seconds.
+  - **Nemotron 3.5 Super** answered correctly in about 5 seconds: the right tool, Oct 20–26, Outerwear, and $792.15 refunded.
+- **The model's job here is small.** It picks one of four tools, passes a period name or a date range, and writes a short answer. The server does the date rules and every calculation, so a free mid-size model is enough.
+
+**Trade-offs**
+- **Rate limits.** Free models are capped per minute and per day, so the 30-question check paces itself and can resume. See below.
+- **Weaker on fuzzy date phrases** than a frontier model. The server-side date resolver and the one-call guard limit the damage. [reports/question-check.md](reports/question-check.md) shows how it actually did.
+
+**Switching models** takes one line, with no code changes. For example, set `OPENROUTER_MODEL=google/gemma-4-31b-it:free` once Gemma's limit clears, or `OPENROUTER_MODEL=anthropic/claude-sonnet-5.5` (paid) in `.env.local`. The tools, the prompt and the guard are the same for every model.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
 | `npm test` | Tests the metrics, the date rule, the tools and the one-call guard. Needs no key. |
-| `npm run check:questions` | Runs all 30 merchant questions through the real model and writes `reports/question-check.md`: the tool, dates and filter for each question, plus pass/fail spot checks. Needs the key. |
+| `npm run check:questions` | Runs all 30 merchant questions through the real model and writes **[reports/question-check.md](reports/question-check.md)**: the tool, dates and filter for each question, plus pass/fail spot checks. Needs the key. If it stops on the free model's rate limit, run it again and it resumes. |
 | `npm run build` | Production build. |
 
 ## How it works

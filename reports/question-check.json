@@ -1,0 +1,378 @@
+[
+  {
+    "requestId": "CRR-25-10-27-0019",
+    "question": "Hi team, before we place our BFCM reorder with our supplier we need to know which parkas and puffers had the most returns from Sept 1 through last Sunday. Can you pull that by product?",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-09-01",
+        "end": "2025-10-26",
+        "category": "Outerwear",
+        "input": {
+          "start": "2025-09-01",
+          "end": "2025-10-26",
+          "category": "Outerwear"
+        }
+      }
+    ],
+    "answer": "Sept 1 – Oct 26, 2025 (Outerwear category):\n\n| Product | Returned Units | Refunded | Top Reasons |\n|---|---|---|---|\n| Alpine Down Parka (P-1001) | 3 | $657.00 | Defective, Too large, Too small |\n| Northridge Insulated Jacket (P-1002) | 2 | $263.94 | Too small, Changed mind |\n\nThe Alpine Down Parka had the most returns (3 units). If you need this split strictly between parkas vs. puffers rather than the whole Outerwear category, let me know."
+  },
+  {
+    "requestId": "CRR-25-10-27-0043",
+    "question": "which jackets came back as returns last week",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "category": "Outerwear",
+        "input": {
+          "period": "last_week",
+          "category": "Outerwear"
+        }
+      }
+    ],
+    "answer": "Oct 20-26, 2025: Two jacket styles were returned last week:\n\n- **Alpine Down Parka** — 3 units returned (1 defective, 1 too large, 1 too small); $219 refunded each\n- **Northridge Insulated Jacket** — 1 unit returned (too small); $135.15 refunded"
+  },
+  {
+    "requestId": "CRR-25-10-27-0077",
+    "question": "best seller since summer?",
+    "toolCalls": [
+      {
+        "name": "product_velocity",
+        "start": "2025-06-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-06-01",
+          "end": "2025-10-27"
+        }
+      }
+    ],
+    "answer": "Jun 1 – Oct 27, 2025: The best sellers are tied at 4 units sold each:\n\n- Selvedge Slim Jeans (Bottoms) — 4 sold, 0 returned\n- Wool Beanie (Accessories) — 4 sold, 0 returned"
+  },
+  {
+    "requestId": "CRR-25-10-27-0102",
+    "question": "are repeat customers growing or not",
+    "toolCalls": [
+      {
+        "name": "repeat_customer_share",
+        "start": "2025-05-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-05-01",
+          "end": "2025-10-27",
+          "groupBy": "month"
+        }
+      }
+    ],
+    "answer": "May–Oct 27, 2025: Repeat customer share has been volatile with very small order volumes, so there's no clear growth trend:\n\n- May: 0% (0/2)\n- Jun: 100% (1/1)\n- Jul: 0% (0/1)\n- Aug: 100% (1/1)\n- Sep: 50% (1/2)\n- Oct (to date): 38.5% (5/13)\n\nWith only 1–13 orders per month, the share swings widely and isn't clearly growing."
+  },
+  {
+    "requestId": "CRR-25-10-27-0131",
+    "question": "sales by week last 8 weeks",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "2025-09-01",
+        "end": "2025-10-26",
+        "input": {
+          "start": "2025-09-01",
+          "end": "2025-10-26",
+          "groupBy": "week"
+        }
+      }
+    ],
+    "answer": "Sep 1 – Oct 26, 2025 (net sales by week):\n\n| Week | Net Sales |\n|------|-----------|\n| Sep 1–7 | $0 |\n| Sep 8–14 | $88 |\n| Sep 15–21 | $0 |\n| Sep 22–28 | $143.10 |\n| Sep 29 – Oct 5 | $378.15 |\n| Oct 6–12 | $522 |\n| Oct 13–19 | $635.40 |\n| Oct 20–26 | $543.50 |"
+  },
+  {
+    "requestId": "CRR-25-10-27-0158",
+    "question": "hey quick one, what was my ROAS on the fall jacket campaign? trying to decide if I double the budget for black friday",
+    "toolCalls": [],
+    "answer": "I don't have ad spend or campaign data, so I can't calculate ROAS for your fall jacket campaign."
+  },
+  {
+    "requestId": "CRR-25-10-27-0174",
+    "question": "jakets returnd last wk",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "category": "Outerwear",
+        "input": {
+          "period": "last_week",
+          "category": "Outerwear"
+        }
+      }
+    ],
+    "answer": "Oct 20–26, 2025: 4 jackets were returned across 2 products, totaling $792.15 refunded.\n\n- Alpine Down Parka — 3 units (1 defective, 1 too large, 1 too small), $657.00\n- Northridge Insulated Jacket — 1 unit (too small), $135.15"
+  },
+  {
+    "requestId": "CRR-25-10-27-0203",
+    "question": "how are returns doing",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "input": {
+          "period": "last_week"
+        }
+      }
+    ],
+    "answer": "Oct 20–26, 2025: 4 returns totaling $792.15 refunded.\n\n- Alpine Down Parka — 3 returns ($657): 1 defective, 1 too large, 1 too small\n- Northridge Insulated Jacket — 1 return ($135.15): too small\n\nOuterwear sizing and one defect are driving last week's returns. Want to see returns for this month instead, or break down by a different period?"
+  },
+  {
+    "requestId": "CRR-25-10-27-0229",
+    "question": "Can I see sales and returns for jackets last week? Need both on one chart if possible, my partner wants to know if returns are eating the sales bump",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "category": "Outerwear",
+        "input": {
+          "period": "last_week",
+          "category": "Outerwear"
+        }
+      }
+    ],
+    "answer": "Oct 20–26, 2025: Jacket (Outerwear) sales last week were modest — 2 orders, 2 units, $356.10 net sales ($159 on Oct 21, $197.10 on Oct 23).\n\nI can only pull one metric per question. To see returns for jackets last week, ask: \"Returns for jackets last week?\""
+  },
+  {
+    "requestId": "CRR-25-10-27-0251",
+    "question": "top 10 products by revenue Oct 1 to Oct 15",
+    "toolCalls": [],
+    "answer": "Product-level revenue ranking isn't available — the product report (product_velocity) ranks top products by units sold, not revenue. I can run the top 10 products by units for Oct 1–15, 2025 instead if that helps."
+  },
+  {
+    "requestId": "CRR-25-10-27-0266",
+    "question": "Could you send us a breakdown of how daily sales over Black Friday weekend last year compare to now? We want to plan inventory off that.",
+    "toolCalls": [],
+    "answer": "I can't pull that because our order history only goes back to May 1, 2025, so last year's Black Friday weekend isn't available."
+  },
+  {
+    "requestId": "CRR-25-10-27-0290",
+    "question": "returns by category this month",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-10-01",
+        "end": "2025-10-27",
+        "input": {
+          "period": "this_month"
+        }
+      }
+    ],
+    "answer": "Oct 1–27, 2025:\n\n| Category | Returned Units | Refunded |\n|---|---|---|\n| Outerwear | 5 | $920.94 |\n| Bottoms | 1 | $74.00 |\n\nOuterwear returns were driven by the Alpine Down Parka (defective, too large, too small) and the Northridge Insulated Jacket (too small, changed mind). Bottoms had one Utility Chino returned for \"changed mind.\""
+  },
+  {
+    "requestId": "CRR-25-10-27-0318",
+    "question": "does anyone know how to see what % of orders are from returning customers lately? the dashboard only shows totals",
+    "toolCalls": [
+      {
+        "name": "repeat_customer_share",
+        "start": "2025-10-01",
+        "end": "2025-10-27",
+        "input": {
+          "period": "this_month"
+        }
+      }
+    ],
+    "answer": "Oct 1-27, 2025: 38.5% of orders are from returning customers (5 of 13 orders)."
+  },
+  {
+    "requestId": "CRR-25-10-27-0337",
+    "question": "weekly revenue by product since august",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "2025-08-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-08-01",
+          "end": "2025-10-27",
+          "groupBy": "week"
+        }
+      }
+    ],
+    "answer": "Aug 1 – Oct 27, 2025: This is store-wide weekly net sales (revenue); the tool doesn't split revenue by product in a single call — ask about a specific product for its weekly sales.\n\n- Aug 18–24: $102.00\n- Sep 8–14: $88.00\n- Sep 22–28: $143.10\n- Sep 29 – Oct 5: $378.15\n- Oct 6–12: $522.00\n- Oct 13–19: $635.40\n- Oct 20–26: $543.50\n- Oct 27–27: $182.20\n\nAll other weeks in that span had $0 net sales."
+  },
+  {
+    "requestId": "CRR-25-10-27-0352",
+    "question": "what sold best this season? want to reorder the right stuff before bfcm",
+    "toolCalls": [
+      {
+        "name": "product_velocity",
+        "start": "2025-06-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-06-01",
+          "end": "2025-10-27"
+        }
+      }
+    ],
+    "answer": "Jun 1 – Oct 27, 2025: The safest reorders are Selvedge Slim Jeans and Wool Beanie — both sold 4 units with zero returns (net 4 each). Merino Crew Sweater is next at net 3. Outerwear moved volume (jackets/parkas sold 4 each) but had high returns, so net demand was lower.\n\nTop net sellers this season:\n- Selvedge Slim Jeans (Bottoms): 4 sold, 0 returned, net 4\n- Wool Beanie (Accessories): 4 sold, 0 returned, net 4\n- Merino Crew Sweater (Knitwear): 3 sold, 0 returned, net 3\n- Northridge Insulated Jacket (Outerwear): 4 sold, 2 returned, net 2"
+  },
+  {
+    "requestId": "CRR-25-10-27-0379",
+    "question": "repeat customer share by month",
+    "toolCalls": [
+      {
+        "name": "repeat_customer_share",
+        "start": "2025-05-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-05-01",
+          "end": "2025-10-27",
+          "groupBy": "month"
+        }
+      }
+    ],
+    "answer": "May 1 – Oct 27, 2025:\n\n| Month | Orders | Repeat Orders | Repeat Share |\n|-------|--------|---------------|--------------|\n| May 2025 | 2 | 0 | 0% |\n| Jun 2025 | 1 | 1 | 100% |\n| Jul 2025 | 1 | 0 | 0% |\n| Aug 2025 | 1 | 1 | 100% |\n| Sep 2025 | 2 | 1 | 50% |\n| Oct 2025 (to 27th) | 13 | 5 | 38.5% |"
+  },
+  {
+    "requestId": "CRR-25-10-27-0425",
+    "question": "sales per day last 14 days",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "2025-10-13",
+        "end": "2025-10-26",
+        "input": {
+          "start": "2025-10-13",
+          "end": "2025-10-26"
+        }
+      }
+    ],
+    "answer": "Oct 13–26, 2025:\n\n| Date | Net Sales |\n|------|-----------|\n| Oct 13 | $0 |\n| Oct 14 | $219 |\n| Oct 15 | $212.40 |\n| Oct 16 | $0 |\n| Oct 17 | $0 |\n| Oct 18 | $204 |\n| Oct 19 | $0 |\n| Oct 20 | $0 |\n| Oct 21 | $159 |\n| Oct 22 | $0 |\n| Oct 23 | $238.50 |\n| Oct 24 | $0 |\n| Oct 25 | $72 |\n| Oct 26 | $74 |\n\nTotal net sales over the 14 days: $1,178.90 across 7 orders."
+  },
+  {
+    "requestId": "CRR-25-10-27-0448",
+    "question": "Hello, I need total sales for each week from May through October so I can compare against what we forecast. Returns too if it's easy.",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "2025-05-01",
+        "end": "2025-10-27",
+        "input": {
+          "start": "2025-05-01",
+          "end": "2025-10-27",
+          "groupBy": "week"
+        }
+      }
+    ],
+    "answer": "May 1 – Oct 27, 2025: weekly net sales below. Returns aren't available by week with this tool — ask \"returns by week\" as a follow-up if you'd like to explore that separately.\n\n| Week | Orders | Units | Gross Sales | Discounts | Net Sales |\n|------|--------|-------|-------------|-----------|-----------|\n| May 1–4 | 0 | 0 | 0 | 0 | 0 |\n| May 5–11 | 1 | 3 | 130 | 0 | 130 |\n| May 12–18 | 0 | 0 | 0 | 0 | 0 |\n| May 19–25 | 0 | 0 | 0 | 0 | 0 |\n| May 26–Jun 1 | 1 | 1 | 94 | 0 | 94 |\n| Jun 2–8 | 0 | 0 | 0 | 0 | 0 |\n| Jun 9–15 | 0 | 0 | 0 | 0 | 0 |\n| Jun 16–22 | 1 | 2 | 180 | 18 | 162 |\n| Jun 23–29 | 0 | 0 | 0 | 0 | 0 |\n| Jun 30–Jul 6 | 0 | 0 | 0 | 0 | 0 |\n| Jul 7–13 | 0 | 0 | 0 | 0 | 0 |\n| Jul 14–20 | 1 | 1 | 118 | 0 | 118 |\n| Jul 21–27 | 0 | 0 | 0 | 0 | 0 |\n| Jul 28–Aug 3 | 0 | 0 | 0 | 0 | 0 |\n| Aug 4–10 | 0 | 0 | 0 | 0 | 0 |\n| Aug 11–17 | 0 | 0 | 0 | 0 | 0 |\n| Aug 18–24 | 1 | 2 | 102 | 0 | 102 |\n| Aug 25–31 | 0 | 0 | 0 | 0 | 0 |\n| Sep 1–7 | 0 | 0 | 0 | 0 | 0 |\n| Sep 8–14 | 1 | 1 | 88 | 0 | 88 |\n| Sep 15–21 | 0 | 0 | 0 | 0 | 0 |\n| Sep 22–28 | 1 | 1 | 159 | 15.90 | 143.10 |\n| Sep 29–Oct 5 | 2 | 3 | 402 | 23.85 | 378.15 |\n| Oct 6–12 | 3 | 4 | 522 | 0 | 522 |\n| Oct 13–19 | 3 | 6 | 659 | 23.60 | 635.40 |\n| Oct 20–26 | 4 | 7 | 570 | 26.50 | 543.50 |\n| Oct 27 (today) | 1 | 2 | 192 | 9.80 | 182.20 |"
+  },
+  {
+    "requestId": "CRR-25-10-27-0472",
+    "question": "top products",
+    "toolCalls": [
+      {
+        "name": "product_velocity",
+        "start": "2025-10-01",
+        "end": "2025-10-27",
+        "input": {
+          "period": "this_month"
+        }
+      }
+    ],
+    "answer": "Oct 1–27, 2025: Top products by net units sold (sales minus returns):\n\n| Product | Category | Sold | Returned | Net |\n|---|---|---|---|---|\n| Wool Beanie | Accessories | 4 | 0 | 4 |\n| Northridge Insulated Jacket | Outerwear | 3 | 1 | 2 |\n| Cable Knit Cardigan | Knitwear | 2 | 0 | 2 |\n| Leather Gloves | Accessories | 2 | 0 | 2 |\n| Merino Crew Sweater | Knitwear | 2 | 0 | 2 |\n| Selvedge Slim Jeans | Bottoms | 2 | 0 | 2 |\n\nThe Wool Beanie leads with 4 net units. Note the Alpine Down Parka sold 4 but had 3 returns, netting only 1. Want returns broken out separately, or top products for a different date range?"
+  },
+  {
+    "requestId": "CRR-25-10-27-0490",
+    "question": "how much did we spend on instagram ads vs what those orders brought in, last 30 days",
+    "toolCalls": [],
+    "answer": "I don't have access to ad spend, campaign data, or ROAS for Instagram ads, so I can't compare ad spend to the orders those ads brought in."
+  },
+  {
+    "requestId": "CRR-25-10-27-0517",
+    "question": "returns by product last 30 days",
+    "toolCalls": [
+      {
+        "name": "returns_by_product_and_reason",
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "input": {
+          "start": "2025-09-27",
+          "end": "2025-10-26"
+        }
+      }
+    ],
+    "answer": "Sep 27 – Oct 26, 2025:\n\n| Product | Category | Reason | Units | Refunded |\n|---|---|---|---|---|\n| Alpine Down Parka (P-1001) | Outerwear | Defective | 1 | 219.00 |\n| Alpine Down Parka (P-1001) | Outerwear | Too large | 1 | 219.00 |\n| Alpine Down Parka (P-1001) | Outerwear | Too small | 1 | 219.00 |\n| Northridge Insulated Jacket (P-1002) | Outerwear | Too small | 1 | 135.15 |\n| Northridge Insulated Jacket (P-1002) | Outerwear | Changed mind | 1 | 128.79 |\n\nTotals: Alpine Down Parka — 3 units / $657.00; Northridge Insulated Jacket — 2 units / $263.94."
+  },
+  {
+    "requestId": "CRR-25-10-27-0539",
+    "question": "is there a way to see the sales trend since we launched the winter boots in sept? feels like its slowing",
+    "toolCalls": [
+      {
+        "name": "sales_by_day",
+        "start": "",
+        "end": "",
+        "input": {
+          "start": "2025-09-01",
+          "end": "2025-10-27",
+          "product": "winter boots",
+          "groupBy": "week"
+        }
+      }
+    ],
+    "answer": "Sep 1 – Oct 27, 2025: No product matching “winter boots” was found in the store data."
+  },
+  {
+    "requestId": "CRR-25-10-27-0561",
+    "question": "how many customers came back twice",
+    "toolCalls": [
+      {
+        "name": "repeat_customer_share",
+        "start": "2025-10-01",
+        "end": "2025-10-27",
+        "input": {
+          "period": "this_month"
+        }
+      }
+    ],
+    "answer": "Oct 1–27, 2025: 5 of 13 orders were from repeat customers (38.5% share). The tool tracks repeat orders/share, not a unique customer count, so I can’t give the exact number of individual customers who came back twice."
+  },
+  {
+    "requestId": "CRR-25-10-27-0588",
+    "question": "are more ppl ordering a 2nd time now than back in january? we changed our loyalty emails in feb",
+    "toolCalls": [],
+    "answer": "I can't compare to January — our order history only starts 2025-05-01, so January 2025 repeat-customer data isn't available. If you'd like, I can show you the repeat-customer share for this month (Oct 1–27) instead."
+  },
+  {
+    "requestId": "CRR-25-10-27-0613",
+    "question": "revenue last month",
+    "toolCalls": [],
+    "answer": "",
+    "error": "Failed after 4 attempts. Last error: AI_APICallError: Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit"
+  },
+  {
+    "requestId": "CRR-25-10-27-0644",
+    "question": "most returned category",
+    "toolCalls": [],
+    "answer": "",
+    "error": "Failed after 4 attempts. Last error: AI_APICallError: Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit"
+  },
+  {
+    "requestId": "CRR-25-10-27-0702",
+    "question": "Could someone tell me which of our bags and belts are top sellers by units since July 1? We're ordering for the holidays this week.",
+    "toolCalls": [],
+    "answer": "",
+    "error": "Failed after 4 attempts. Last error: AI_APICallError: Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit"
+  },
+  {
+    "requestId": "CRR-25-10-27-0756",
+    "question": "sales been weird lately, can you show me whats going on",
+    "toolCalls": [],
+    "answer": "",
+    "error": "Failed after 4 attempts. Last error: AI_APICallError: Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit"
+  },
+  {
+    "requestId": "CRR-25-10-27-0798",
+    "question": "how do i see which coats got returned most over the last couple weeks? need it before i reorder",
+    "toolCalls": [],
+    "answer": "",
+    "error": "Failed after 4 attempts. Last error: AI_APICallError: Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit"
+  }
+]

@@ -120,3 +120,23 @@ The descriptions come from the 30 questions in `data/merchant_report_requests_oc
 - Store today defaults to **Monday 2025-10-27**. That's the last day of the order data and the day the 30 questions were sent. Last week is still 20–26 Oct.
 - One call is enforced three ways: `parallelToolCalls: false`, `isStepCount(2)` with tools switched off on step 2, and a guard that refuses a second call.
 - Every tool result returns `dates`, and every answer starts with them.
+
+## 30-question run (first pass, 22 Nov 2026)
+
+The full log is in [reports/question-check.md](reports/question-check.md).
+
+**Overall**
+- **24 of 30 answered** on `nvidia/nemotron-3.5-super-vl:free`.
+- **8 of 8 spot checks pass**, and **no question made more than one tool call**.
+- **Dates came out right for every relative phrase**:
+  - "last wk" → Oct 20–26
+  - "last 14 days" → Oct 13–26
+  - "last 30 days" → Sep 27–Oct 26
+  - "last 8 weeks" → Sep 1–Oct 26
+  - "Sept 1 through last Sunday" → Sep 1–Oct 26
+- **No tool when there's no data behind the question:** ROAS, ad spend, last year's Black Friday and "back in January" all got a plain explanation instead of a guess.
+- **"Growing?" and "by month"** questions used `groupBy: month`.
+
+**Not finished yet**
+- **5 questions hit OpenRouter's free limit of 50 requests a day.** They'll run after the daily reset (`npm run check:questions` resumes).
+- **One bug fixed:** the sneaker question (0401) names a product this store doesn't sell. The model printed raw `<tool_call>` markup instead of an answer. The tool error now lists the products the store sells and tells the model to answer in plain words. 0401 reruns with the other 5.

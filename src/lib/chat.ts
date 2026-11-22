@@ -14,7 +14,8 @@ import {
 import { productVelocity, repeatCustomerShare, returnsByProductAndReason, salesByDay } from "./metrics";
 import { loadOrders } from "./orders";
 
-export const DEFAULT_MODEL = "anthropic/claude-sonnet-5.5";
+/** Free OpenRouter model that supports tool calling (see README: "Model choice"). */
+export const DEFAULT_MODEL = "nvidia/nemotron-3.5-super-vl:free";
 const CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Knitwear", "Accessories"] as const;
 
 // ------------------------------------------------------------ shared input + date resolution
@@ -58,7 +59,10 @@ export function resolveScope(
   let product: string | undefined;
   if (input.product) {
     const hit = loadOrders().find((l) => l.productTitle.toLowerCase().includes(input.product!.toLowerCase()));
-    if (!hit) throw new Error(`No product matching "${input.product}".`);
+    if (!hit) {
+      const titles = [...new Set(loadOrders().map((l) => l.productTitle))].join(", ");
+      throw new Error(`This store has no product matching "${input.product}". It sells: ${titles}.`);
+    }
     productId = hit.productId;
     product = hit.productTitle;
   }
@@ -107,7 +111,10 @@ export function buildTools(today: string, onCall?: (name: string, scope: Resolve
       return { dates: { start: scope.start, end: scope.end }, filters: { category: scope.category, product: scope.product }, result: fn({ ...scope, ...filters }) };
     } catch (e) {
       onCall?.(name, { start: "", end: "" }, input);
-      return { error: (e as Error).message };
+      return {
+        error: (e as Error).message,
+        instruction: "Tell the merchant this in one or two plain sentences. Do not call another tool and do not output tool-call markup.",
+      };
     }
   };
   const opts = (s: ResolvedScope) => ({ category: s.category, productId: s.productId });
@@ -178,7 +185,8 @@ RULES:
    (e.g. last year's Black Friday, January).
 5. If a question needs two metrics (e.g. sales AND returns), answer the main one and say which other question to ask next.
 6. Start the answer with the exact dates used, e.g. "Oct 20-26, 2025:". Use only numbers from the tool result; never invent or estimate.
-7. Keep it short: a sentence or two, then a compact list or table if useful. If the tool returns an error, relay it plainly.`;
+7. Keep it short: a sentence or two, then a compact list or table if useful. If the tool returns an error, relay it plainly
+   in your own words. Never write tool-call markup such as <tool_call> in an answer.`;
 }
 
 // ------------------------------------------------------------ model + call settings

@@ -4,17 +4,34 @@
  *
  *   npm run check:questions        (needs OPENROUTER_API_KEY in .env.local)
  *
- * Output: reports/question-check.md
+ * Output: reports/question-check.md (readable log) and
+ *         reports/question-check.json (raw results, used to resume).
+ *
+ * Free OpenRouter models are rate-limited, so the script paces itself and
+ * saves after every question. If it stops on a limit, run it again later:
+ * it skips questions that already have an answer. Use --fresh to start over.
  */
 import { generateText } from "ai";
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { chatSettings, type ResolvedScope } from "../src/lib/chat";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chatSettings, DEFAULT_MODEL, type ResolvedScope } from "../src/lib/chat";
 import { storeToday } from "../src/lib/dates";
 
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 interface Q { requestId: string; question: string }
+interface Result {
+  requestId: string;
+  question: string;
+  toolCalls: { name: string; start: string; end: string; category?: string; product?: string; input: unknown }[];
+  answer: string;
+  error?: string;
+}
+
 const questions: Q[] = JSON.parse(readFileSync("data/merchant_questions.json", "utf8"));
+const JSON_OUT = "reports/question-check.json";
+const MD_OUT = "reports/question-check.md";
+const PAUSE_MS = Number(process.env.CHECK_PAUSE_MS ?? 4000);
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Spot checks the brief calls out. Every other question is logged for review.
 const EXPECT: Record<string, { tool: string | null; start?: string; end?: string; category?: string }> = {
@@ -28,52 +45,85 @@ const EXPECT: Record<string, { tool: string | null; start?: string; end?: string
   "CRR-25-10-27-0352": { tool: "product_velocity" },
 };
 
-async function main() {
-  const today = storeToday();
-  const rows: string[] = [];
-  let failures = 0;
-  let multiCall = 0;
+function verdict(r: Result): "" | "PASS" | "FAIL" {
+  const exp = EXPECT[r.requestId];
+  if (!exp || r.error) return "";
+  const c = r.toolCalls[0];
+  const ok =
+    (exp.tool === null ? r.toolCalls.length === 0 : c?.name === exp.tool) &&
+    (!exp.start || c?.start === exp.start) &&
+    (!exp.end || c?.end === exp.end) &&
+    (!exp.category || c?.category === exp.category);
+  return ok ? "PASS" : "FAIL";
+}
 
-  for (const q of questions) {
-    const calls: { name: string; scope: ResolvedScope; input: unknown }[] = [];
-    const settings = chatSettings({ today, onCall: (name, scope, input) => calls.push({ name, scope, input }) });
-    let answer = "";
-    try {
-      const r = await generateText({ ...settings, prompt: q.question });
-      answer = r.text.replace(/\s+/g, " ").trim();
-      if (r.steps.flatMap((s) => s.toolCalls).length > 1) multiCall++;
-    } catch (e) {
-      answer = `ERROR: ${(e as Error).message}`;
-    }
-    const c = calls[0];
-    const exp = EXPECT[q.requestId];
-    let verdict = "";
-    if (exp) {
-      const ok =
-        (exp.tool === null ? calls.length === 0 : c?.name === exp.tool) &&
-        (!exp.start || c?.scope.start === exp.start) &&
-        (!exp.end || c?.scope.end === exp.end) &&
-        (!exp.category || c?.scope.category === exp.category);
-      verdict = ok ? "PASS" : "FAIL";
-      if (!ok) failures++;
-    }
-    const cell = (s: string) => s.replace(/\|/g, "\\|");
-    rows.push(
-      `| ${q.requestId.slice(-4)} | ${cell(q.question)} | ${c ? `\`${c.name}\`` : "_no tool_"} | ${c?.scope.start ? `${c.scope.start} → ${c.scope.end}` : ""} | ${[c?.scope.category, c?.scope.product].filter(Boolean).join(", ")} | ${verdict} | ${cell(answer.slice(0, 220))}${answer.length > 220 ? "…" : ""} |`,
-    );
-    console.log(`${verdict.padEnd(4)} ${q.requestId}  ${c ? c.name : "(no tool)"}  ${c?.scope.start ?? ""}..${c?.scope.end ?? ""}`);
-  }
-
-  mkdirSync("reports", { recursive: true });
+function writeReport(results: Result[], model: string, today: string) {
+  const done = results.filter((r) => !r.error);
+  const fails = results.filter((r) => verdict(r) === "FAIL").length;
+  const multi = results.filter((r) => r.toolCalls.length > 1).length;
+  const noTool = done.filter((r) => r.toolCalls.length === 0).length;
+  const cell = (s: string) => s.replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
+  const rows = questions.map((q) => {
+    const r = results.find((x) => x.requestId === q.requestId);
+    if (!r) return `| ${q.requestId.slice(-4)} | ${cell(q.question)} | _not run yet_ | | | | |`;
+    const c = r.toolCalls[0];
+    const text = r.error ? `ERROR: ${r.error}` : r.answer;
+    return `| ${q.requestId.slice(-4)} | ${cell(q.question)} | ${c ? `\`${c.name}\`` : "_no tool_"} | ${c?.start ? `${c.start} → ${c.end}` : ""} | ${[c?.category, c?.product].filter(Boolean).join(", ")} | ${verdict(r)} | ${cell(text.slice(0, 240))}${text.length > 240 ? "…" : ""} |`;
+  });
   writeFileSync(
-    "reports/question-check.md",
-    `# 30-question check\n\nModel: \`${process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-5.5"}\` · store today: ${today} · run ${new Date().toISOString()}\n\n` +
-      `Spot checks failed: **${failures}** · questions with more than one tool call: **${multiCall}**\n\n` +
+    MD_OUT,
+    `# 30-question check\n\n` +
+      `- Model: \`${model}\` via OpenRouter\n- Store today: ${today}\n- Last run: ${new Date().toISOString()}\n` +
+      `- Answered: **${done.length}/${questions.length}** · tool calls made: **${done.length - noTool}** · no tool (missing data): **${noTool}**\n` +
+      `- Questions with more than one tool call: **${multi}**\n` +
+      `- Spot checks: **${Object.keys(EXPECT).length - fails}/${Object.keys(EXPECT).length} pass** (questions marked PASS/FAIL)\n\n` +
       `| # | Merchant question | Tool | Dates | Filter | Check | Answer (start) |\n|---|---|---|---|---|---|---|\n` +
       rows.join("\n") + "\n",
   );
-  console.log(`\nWrote reports/question-check.md. Spot-check failures: ${failures}. Multi-call questions: ${multiCall}.`);
-  if (failures || multiCall) process.exitCode = 1;
+  return { done: done.length, fails, multi };
+}
+
+async function main() {
+  const today = storeToday();
+  const model = process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
+  mkdirSync("reports", { recursive: true });
+  const fresh = process.argv.includes("--fresh");
+  const results: Result[] = !fresh && existsSync(JSON_OUT) ? JSON.parse(readFileSync(JSON_OUT, "utf8")) : [];
+
+  // --report-only rebuilds the Markdown log from saved results without calling the model.
+  for (const q of process.argv.includes("--report-only") ? [] : questions) {
+    const prev = results.find((r) => r.requestId === q.requestId);
+    if (prev && !prev.error) continue;
+
+    const calls: Result["toolCalls"] = [];
+    const settings = chatSettings({
+      today,
+      onCall: (name, s: ResolvedScope, input) =>
+        calls.push({ name, start: s.start, end: s.end, category: s.category, product: s.product, input }),
+    });
+    const r: Result = { requestId: q.requestId, question: q.question, toolCalls: calls, answer: "" };
+    try {
+      const out = await generateText({ ...settings, prompt: q.question, maxRetries: 3 });
+      r.answer = out.text.trim();
+      // Count calls the model attempted too, including any the guard refused.
+      const attempted = out.steps.flatMap((s) => s.toolCalls).length;
+      if (attempted > calls.length) r.toolCalls.push(...Array(attempted - calls.length).fill({ name: "(refused)", start: "", end: "", input: null }));
+    } catch (e) {
+      r.error = (e as Error).message.slice(0, 300);
+    }
+    const i = results.findIndex((x) => x.requestId === q.requestId);
+    if (i >= 0) results[i] = r;
+    else results.push(r);
+    writeFileSync(JSON_OUT, JSON.stringify(results, null, 2));
+    const c = r.toolCalls[0];
+    console.log(`${(verdict(r) || "    ").padEnd(4)} ${q.requestId}  ${r.error ? "ERROR " + r.error.slice(0, 80) : c ? `${c.name} ${c.start}..${c.end}` : "(no tool)"}`);
+    await sleep(PAUSE_MS);
+  }
+
+  const s = writeReport(results, model, today);
+  console.log(`\nWrote ${MD_OUT}. Answered ${s.done}/${questions.length}. Spot-check failures: ${s.fails}. Multi-call questions: ${s.multi}.`);
+  if (s.done < questions.length) console.log("Some questions hit errors (often the free model's rate limit). Run again later to finish them.");
+  if (s.fails || s.multi) process.exitCode = 1;
 }
 
 main();
