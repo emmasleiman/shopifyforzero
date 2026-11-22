@@ -1,45 +1,72 @@
-# Shopify merchant metrics (Zero University case project)
+# Shopify merchant analytics chat (Zero University case project)
 
-Four metrics merchants can ask about, each a function over store orders, built on the Shopify order history for May to October 2025:
+Merchants ask questions about their store in plain language ("jakets returnd last wk"). A Claude model, called through OpenRouter, answers each question with **exactly one metric tool call over exact dates**. The answer is streamed back.
 
-1. **Sales by day**
-2. **Product velocity** (net units sold per day)
-3. **Returns by product and reason** (counted on the return date)
-4. **Repeat customer share** (the share of orders from customers who had ordered before)
+The project is built on the Shopify order history for May to October 2025. Read **[NOTES.md](NOTES.md)** for the decisions behind it.
 
-Read **[NOTES.md](NOTES.md)** for the plan, the date rule ("last week", "this month") and the numbers checked against the data.
-
-## Run it
+## Setup
 
 ```bash
 npm install
-npm test          # metric + date-rule tests
-npm run dev       # http://localhost:3000 shows every metric for last week
+cp .env.example .env.local      # then paste your OpenRouter key into OPENROUTER_API_KEY
+npm run dev                     # http://localhost:3000/chat
 ```
 
-## Use it
+Get a key at openrouter.ai → **Keys**. Create one for this project and give it a credit limit. Only the server reads the key, in `src/lib/chat.ts`. It isn't `NEXT_PUBLIC_`, so it never reaches the browser, and `.env.local` is git-ignored.
 
-```ts
-import { resolvePeriod } from "@/lib/dates";
-import { returnsByProductAndReason } from "@/lib/metrics";
+## Commands
 
-const { start, end } = resolvePeriod("last_week", "2025-10-28"); // 2025-10-20 .. 2025-10-26
-returnsByProductAndReason(start, end, { category: "Outerwear" });
-```
+| Command | What it does |
+|---|---|
+| `npm test` | Tests the metrics, the date rule, the tools and the one-call guard. Needs no key. |
+| `npm run check:questions` | Runs all 30 merchant questions through the real model and writes `reports/question-check.md`: the tool, dates and filter for each question, plus pass/fail spot checks. Needs the key. |
+| `npm run build` | Production build. |
 
-Over HTTP:
+## How it works
 
-```
-GET /api/metrics                                   # catalog of metrics
-GET /api/metrics?metric=returns_by_product_and_reason&period=last_week&category=Outerwear
-GET /api/metrics?metric=sales_by_day&period=this_month
-GET /api/metrics?metric=product_velocity&start=2025-10-01&end=2025-10-27
-```
+### The four metrics
+
+These are in `src/lib/metrics.ts`:
+
+1. **Sales by day:** counted on the order date. Can be grouped by week or month.
+2. **Product velocity:** net units sold per day.
+3. **Returns by product and reason:** counted on the **return date**.
+4. **Repeat customer share:** the share of orders from customers who had ordered before. Can be grouped by week or month.
+
+### The tools
+
+The tools are in `src/lib/chat.ts`. Each description uses the words merchants actually typed in `data/merchant_questions.json`.
+
+- **"Came back" goes to the right tool.** Products that came back are returns. People who came back are repeat customers.
+- **Category words are mapped.** Jackets, coats, parkas and puffers all mean the Outerwear category.
+
+### Exact dates
+
+- **The server owns the dates.**
+  - The model passes `period: "last_week" | "this_month"`, and the server turns it into exact dates with the tested `resolvePeriod`.
+  - For any other phrase the model passes an explicit `start` and `end`, using date anchors given in the system prompt.
+- **Every tool result echoes the dates it used,** and every answer starts with them.
+- **Ranges outside the data are rejected.** The order history covers 2025-05-01 to today, and the model relays the error.
+
+### One question, one tool call
+
+Three layers enforce it:
+
+1. Parallel tool calls are off.
+2. The chat route allows at most 2 steps. Step 2 has tools switched off, so it can only answer.
+3. The tool guard refuses any second call in the same request.
+
+### No data, no tool
+
+Some questions ask about ad spend, ROAS, inventory or dates before May 2025. The model says the data is missing instead of guessing.
 
 ## Layout
 
-- `data/orders.csv`: the order export (one row per line item)
-- `src/lib/orders.ts`: CSV loader (money held in cents)
-- `src/lib/dates.ts`: "last week" and "this month" → exact inclusive dates
-- `src/lib/metrics.ts`: the four metric functions, plus the `METRICS` registry
-- `src/app/api/metrics/route.ts`: JSON API for the model in the next step
+- `data/orders.csv`: the order export, one row per line item
+- `data/merchant_report_requests_oct27.xlsx` and `data/merchant_questions.json`: the 30 merchant questions
+- `src/lib/orders.ts`, `dates.ts`, `metrics.ts`: the loader, the date rule and the four metrics
+- `src/lib/chat.ts`: the tools, the system prompt and the model settings
+- `src/app/api/chat/route.ts`: the streaming chat route
+- `src/app/chat/page.tsx`: the chat UI
+- `src/app/api/metrics/route.ts`: the metrics as plain JSON, with no model
+- `scripts/check-questions.ts`: the 30-question check

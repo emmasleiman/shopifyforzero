@@ -83,3 +83,40 @@ All four take `(start, end, options?)`. `options.category` (e.g. `"Outerwear"` f
 ## Next step
 
 Connect Claude. Expose `METRICS` as tools that take `start`, `end`, `category` and `productId`. Give the model the date rule and the store's "today".
+
+---
+
+# Step 2 notes: the chat route
+
+## OpenRouter key
+
+- **Getting it:** create a project key at openrouter.ai → Keys, and give it a credit limit.
+- **Where it lives:** only in `.env.local` as `OPENROUTER_API_KEY`. `.env*` is git-ignored, and `.env.example` ships with the value empty.
+- **Who reads it:** only server code (`src/lib/chat.ts`). It's never `NEXT_PUBLIC_`.
+- **If it leaks:** delete the key on OpenRouter and create a new one.
+
+## Tool descriptions in merchants' words
+
+The descriptions come from the 30 questions in `data/merchant_report_requests_oct27.xlsx`.
+
+| Tool | Merchant words it lists |
+|---|---|
+| sales_by_day | sales, revenue, sales per day, sales by week, weekly revenue, revenue last month, trend, slowing |
+| product_velocity | best seller, top products, what sold best, top sellers by units, reorder, restock before BFCM |
+| returns_by_product_and_reason | returns, returnd, came back as returns, most returned, by product/category, sizing |
+| repeat_customer_share | repeat/returning customers, % of orders from returning customers, 2nd time, came back twice, growing |
+
+- **"Came back" is split.** Products coming back means returns. People coming back means repeat customers. Both descriptions say so.
+- **Category words** are mapped in the `category` parameter. Jackets, coats, parkas, puffers and shells all mean Outerwear.
+- **Questions with no data behind them get no tool call.** The model says so in one sentence. In the 30 questions:
+  - ROAS, ad spend and campaigns (0158, 0490): we have no ad data.
+  - Last year's Black Friday (0266) and "back in January" (0588): both fall outside May to October 2025.
+- **Questions that need two metrics** (0229: sales *and* returns, 0448: sales *and* returns) get an answer to the main one, plus a note on the follow-up question.
+- **Weekly and monthly questions** are common, so `sales_by_day` and `repeat_customer_share` take `groupBy`. The server adds up the days, not the model. This is a view option, not a new metric.
+
+## One question, one tool call, exact dates
+
+- `period: "last_week" | "this_month"` is resolved on the server by `resolvePeriod`. Other phrases ("last 14 days", "since August", "Sept 1 through last Sunday") get explicit `start`/`end`. The system prompt gives the model today's weekday and anchors: yesterday, last Sunday, and the start of this week.
+- Store today defaults to **Monday 2025-10-27**. That's the last day of the order data and the day the 30 questions were sent. Last week is still 20–26 Oct.
+- One call is enforced three ways: `parallelToolCalls: false`, `isStepCount(2)` with tools switched off on step 2, and a guard that refuses a second call.
+- Every tool result returns `dates`, and every answer starts with them.

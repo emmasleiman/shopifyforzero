@@ -71,10 +71,34 @@ export function eachDay(start: string, end: string): string[] {
 }
 
 /**
- * The store's "today". The bundled history ends on 2025-10-27, so the demo
- * defaults to the day after; set STORE_TODAY to override (e.g. in .env.local).
+ * The store's "today". The bundled history ends on Monday 2025-10-27, the same
+ * day the merchant questions were sent; set STORE_TODAY to override.
  */
-export const DEFAULT_STORE_TODAY = "2025-10-28";
+export const DEFAULT_STORE_TODAY = "2025-10-27";
+/** First day the bundled order history covers. */
+export const DATA_START = "2025-05-01";
+
+/** Splits an inclusive range into Monday–Sunday weeks or calendar months (edges clipped to the range). */
+export function splitRange(start: string, end: string, by: "week" | "month"): DateRange[] {
+  const out: DateRange[] = [];
+  let s = start;
+  while (s <= end) {
+    const next = by === "week" ? addDays(startOfWeek(s), 7) : nextMonth(s);
+    const e = addDays(next, -1) < end ? addDays(next, -1) : end;
+    out.push({ start: s, end: e });
+    s = next;
+  }
+  return out;
+}
+const nextMonth = (s: string) => {
+  const d = parse(s);
+  return fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)));
+};
+
+/** Weekday name for a date, e.g. "Monday". */
+export const weekday = (s: string) =>
+  ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][parse(s).getUTCDay()];
+export { addDays };
 export function storeToday(): string {
   const env = process.env.STORE_TODAY;
   return env && isIsoDate(env) ? env : DEFAULT_STORE_TODAY;

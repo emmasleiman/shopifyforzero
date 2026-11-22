@@ -1,0 +1,242 @@
+[
+  {
+    "requestId": "CRR-25-10-27-0019",
+    "submittedAt": "2025-10-27T06:04:51Z",
+    "sourceChannel": "Email",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "500-2000",
+    "question": "Hi team, before we place our BFCM reorder with our supplier we need to know which parkas and puffers had the most returns from Sept 1 through last Sunday. Can you pull that by product?"
+  },
+  {
+    "requestId": "CRR-25-10-27-0043",
+    "submittedAt": "2025-10-27T06:31:07Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "100-500",
+    "question": "which jackets came back as returns last week"
+  },
+  {
+    "requestId": "CRR-25-10-27-0077",
+    "submittedAt": "2025-10-27T06:58:22Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Footwear",
+    "monthlyOrdersBand": "<100",
+    "question": "best seller since summer?"
+  },
+  {
+    "requestId": "CRR-25-10-27-0102",
+    "submittedAt": "2025-10-27T07:05:40Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "500-2000",
+    "question": "are repeat customers growing or not"
+  },
+  {
+    "requestId": "CRR-25-10-27-0131",
+    "submittedAt": "2025-10-27T07:12:18Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "2000+",
+    "question": "sales by week last 8 weeks"
+  },
+  {
+    "requestId": "CRR-25-10-27-0158",
+    "submittedAt": "2025-10-27T07:19:55Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "100-500",
+    "question": "hey quick one, what was my ROAS on the fall jacket campaign? trying to decide if I double the budget for black friday"
+  },
+  {
+    "requestId": "CRR-25-10-27-0174",
+    "submittedAt": "2025-10-27T07:24:03Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "100-500",
+    "question": "jakets returnd last wk"
+  },
+  {
+    "requestId": "CRR-25-10-27-0203",
+    "submittedAt": "2025-10-27T07:31:47Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Accessories",
+    "monthlyOrdersBand": "<100",
+    "question": "how are returns doing"
+  },
+  {
+    "requestId": "CRR-25-10-27-0229",
+    "submittedAt": "2025-10-27T07:38:12Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "500-2000",
+    "question": "Can I see sales and returns for jackets last week? Need both on one chart if possible, my partner wants to know if returns are eating the sales bump"
+  },
+  {
+    "requestId": "CRR-25-10-27-0251",
+    "submittedAt": "2025-10-27T07:42:10Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "500-2000",
+    "question": "top 10 products by revenue Oct 1 to Oct 15"
+  },
+  {
+    "requestId": "CRR-25-10-27-0266",
+    "submittedAt": "2025-10-27T07:47:33Z",
+    "sourceChannel": "Email",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "2000+",
+    "question": "Could you send us a breakdown of how daily sales over Black Friday weekend last year compare to now? We want to plan inventory off that."
+  },
+  {
+    "requestId": "CRR-25-10-27-0290",
+    "submittedAt": "2025-10-27T07:53:09Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Footwear",
+    "monthlyOrdersBand": "100-500",
+    "question": "returns by category this month"
+  },
+  {
+    "requestId": "CRR-25-10-27-0318",
+    "submittedAt": "2025-10-27T08:01:26Z",
+    "sourceChannel": "Shopify Community",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "<100",
+    "question": "does anyone know how to see what % of orders are from returning customers lately? the dashboard only shows totals"
+  },
+  {
+    "requestId": "CRR-25-10-27-0337",
+    "submittedAt": "2025-10-27T08:06:44Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "2000+",
+    "question": "weekly revenue by product since august"
+  },
+  {
+    "requestId": "CRR-25-10-27-0352",
+    "submittedAt": "2025-10-27T08:11:58Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "100-500",
+    "question": "what sold best this season? want to reorder the right stuff before bfcm"
+  },
+  {
+    "requestId": "CRR-25-10-27-0379",
+    "submittedAt": "2025-10-27T08:17:30Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Accessories",
+    "monthlyOrdersBand": "100-500",
+    "question": "repeat customer share by month"
+  },
+  {
+    "requestId": "CRR-25-10-27-0401",
+    "submittedAt": "2025-10-27T08:24:15Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Footwear",
+    "monthlyOrdersBand": "500-2000",
+    "question": "Our sneaker returns feel really high recently, which styles are coming back the most? Is it a sizing thing?"
+  },
+  {
+    "requestId": "CRR-25-10-27-0425",
+    "submittedAt": "2025-10-27T08:31:02Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Footwear",
+    "monthlyOrdersBand": "500-2000",
+    "question": "sales per day last 14 days"
+  },
+  {
+    "requestId": "CRR-25-10-27-0448",
+    "submittedAt": "2025-10-27T08:38:49Z",
+    "sourceChannel": "Email",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "100-500",
+    "question": "Hello, I need total sales for each week from May through October so I can compare against what we forecast. Returns too if it's easy."
+  },
+  {
+    "requestId": "CRR-25-10-27-0472",
+    "submittedAt": "2025-10-27T08:44:16Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "100-500",
+    "question": "top products"
+  },
+  {
+    "requestId": "CRR-25-10-27-0490",
+    "submittedAt": "2025-10-27T08:52:37Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "2000+",
+    "question": "how much did we spend on instagram ads vs what those orders brought in, last 30 days"
+  },
+  {
+    "requestId": "CRR-25-10-27-0517",
+    "submittedAt": "2025-10-27T09:03:11Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "500-2000",
+    "question": "returns by product last 30 days"
+  },
+  {
+    "requestId": "CRR-25-10-27-0539",
+    "submittedAt": "2025-10-27T09:10:45Z",
+    "sourceChannel": "Shopify Community",
+    "storeVertical": "Footwear",
+    "monthlyOrdersBand": "100-500",
+    "question": "is there a way to see the sales trend since we launched the winter boots in sept? feels like its slowing"
+  },
+  {
+    "requestId": "CRR-25-10-27-0561",
+    "submittedAt": "2025-10-27T09:17:29Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "<100",
+    "question": "how many customers came back twice"
+  },
+  {
+    "requestId": "CRR-25-10-27-0588",
+    "submittedAt": "2025-10-27T09:26:52Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "2000+",
+    "question": "are more ppl ordering a 2nd time now than back in january? we changed our loyalty emails in feb"
+  },
+  {
+    "requestId": "CRR-25-10-27-0613",
+    "submittedAt": "2025-10-27T09:34:08Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Accessories",
+    "monthlyOrdersBand": "500-2000",
+    "question": "revenue last month"
+  },
+  {
+    "requestId": "CRR-25-10-27-0644",
+    "submittedAt": "2025-10-27T09:48:33Z",
+    "sourceChannel": "Admin search",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "100-500",
+    "question": "most returned category"
+  },
+  {
+    "requestId": "CRR-25-10-27-0702",
+    "submittedAt": "2025-10-27T10:21:17Z",
+    "sourceChannel": "Email",
+    "storeVertical": "Accessories",
+    "monthlyOrdersBand": "100-500",
+    "question": "Could someone tell me which of our bags and belts are top sellers by units since July 1? We're ordering for the holidays this week."
+  },
+  {
+    "requestId": "CRR-25-10-27-0756",
+    "submittedAt": "2025-10-27T11:46:05Z",
+    "sourceChannel": "Support chat",
+    "storeVertical": "Apparel",
+    "monthlyOrdersBand": "500-2000",
+    "question": "sales been weird lately, can you show me whats going on"
+  },
+  {
+    "requestId": "CRR-25-10-27-0798",
+    "submittedAt": "2025-10-27T13:22:40Z",
+    "sourceChannel": "Shopify Community",
+    "storeVertical": "Outerwear",
+    "monthlyOrdersBand": "<100",
+    "question": "how do i see which coats got returned most over the last couple weeks? need it before i reorder"
+  }
+]
