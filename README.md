@@ -34,6 +34,17 @@ The default model is **`nvidia/nemotron-3.5-super-vl:free`** (NVIDIA Nemotron 3.
 
 **Switching models** takes one line, with no code changes. For example, set `OPENROUTER_MODEL=google/gemma-4-31b-it:free` once Gemma's limit clears, or `OPENROUTER_MODEL=anthropic/claude-sonnet-5.5` (paid) in `.env.local`. The tools, the prompt and the guard are the same for every model.
 
+## Chart choices
+
+Each metric gets the chart shape that fits the question it answers.
+
+| Metric | Chart | Why |
+|---|---|---|
+| Sales by day | **Line** | It's a trend over time. Merchants want to see the Black Friday ramp or a slowdown. Days with no orders plot as zero, so gaps are honest. Weekly or monthly views use the same line with fewer points. |
+| Product velocity | **Bar** (horizontal, ranked) | "What sells best / what do I reorder" compares products, and the longest bar answers it at a glance. Bars are sorted by **net units per day**. A product that sells well but mostly comes back, like the Alpine Down Parka (4 sold, 3 returned), doesn't look like a winner. |
+| Returns by product and reason | **Table** | Each row combines a product, a reason, units and refunded dollars, which suits a table the merchant can scan and act on. Last week it was four rows of Outerwear: 3 Alpine Down Parkas (defective, too large, too small) and 1 Northridge Insulated Jacket (too small). That makes the sizing problem obvious. |
+| Repeat customer share | **Metrics card** | One number with its context, e.g. **50% — 2 of 4 orders**. The count stays on the card because order volumes are small, and a percentage alone would overstate a swing. A "by month" or "is it growing" question shows the same metric as a small line. |
+
 ## Commands
 
 | Command | What it does |
