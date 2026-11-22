@@ -4,6 +4,18 @@ Merchants ask questions about their store in plain language ("jakets returnd las
 
 The project is built on the Shopify order history for May to October 2025. Read **[NOTES.md](NOTES.md)** for the decisions behind it.
 
+## Live
+
+**Live on Vercel: https://shopifyforzero2.vercel.app**
+
+| Page | Link |
+|---|---|
+| Dashboard | https://shopifyforzero2.vercel.app/dashboard |
+| Ask a question | https://shopifyforzero2.vercel.app/chat |
+| Metric API | https://shopifyforzero2.vercel.app/api/metrics |
+
+The live run of Erik Vogt's acceptance questions is in **[reports/acceptance.md](reports/acceptance.md)**. It also fills in his sheet, saved as [reports/acceptance_results.xlsx](reports/acceptance_results.xlsx).
+
 ![Store dashboard for last week, Oct 20–26 2025: sales line, best-seller bars, a returns table showing 4 jacket returns and $792.15 refunded, and a 50% repeat-customer card](docs/dashboard.png)
 
 *`/dashboard`, last week (Oct 20–26, 2025). The `/chat` page draws the same charts under each answer.*
@@ -24,6 +36,27 @@ npm run dev                     # http://localhost:3000 (opens /dashboard); /cha
 ```
 
 Get a key at openrouter.ai → **Keys**. Create one for this project and give it a small credit limit. The default model is free, so the key costs nothing to use. Only the server reads the key, in `src/lib/chat.ts`. It isn't `NEXT_PUBLIC_`, so it never reaches the browser, and `.env.local` is git-ignored.
+
+## Deployment (Vercel)
+
+The repo is imported into Vercel as the project **shopifyforzero2**. Every push to `main` redeploys https://shopifyforzero2.vercel.app, and other branches get preview URLs.
+
+**Environment variables.** These are set in Vercel → Project → Settings → Environment Variables, for Production and Preview:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `OPENROUTER_API_KEY` | the project's OpenRouter key | Stored encrypted in Vercel only, with a small credit cap. Never in the repo. |
+| `STORE_TODAY` | `2025-10-27` | Fixed reference date: the end of the order data and the day the questions were sent. |
+| `OPENROUTER_MODEL` | `nvidia/nemotron-3.5-super-vl:free` | Optional. Defaults to the same model. |
+
+**How the key stays private on the live site**
+- Only the server route `/api/chat` reads it, through `process.env`. It has no `NEXT_PUBLIC_` prefix, so it is never bundled into the browser.
+- I checked that the live page source contains no key.
+- Errors returned to the browser are rewritten into plain messages, so provider details never leak.
+
+**The order data ships with the server functions.** `next.config.ts` includes `data/orders.csv` in the files Vercel bundles with each server function (`outputFileTracingIncludes`), so the live metrics read the real orders.
+
+**Deployment Protection is off.** Reviewers can open the site without a Vercel login.
 
 ## Model choice
 
