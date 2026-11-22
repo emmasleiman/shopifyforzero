@@ -20,6 +20,8 @@ import { loadOrders, type OrderLine } from "./orders";
 export interface MetricOptions {
   category?: string;
   productId?: string;
+  /** Sales channel, e.g. "Online Store", "Point of Sale", "Shop app", "Instagram". */
+  channel?: string;
   orders?: OrderLine[];
 }
 
@@ -29,10 +31,12 @@ const sum = <T>(xs: T[], f: (x: T) => number) => xs.reduce((a, x) => a + f(x), 0
 function scoped(start: string, end: string, opts: MetricOptions = {}): OrderLine[] {
   assertRange(start, end);
   const cat = opts.category?.toLowerCase();
+  const ch = opts.channel?.toLowerCase();
   return (opts.orders ?? loadOrders()).filter(
     (l) =>
       (!cat || l.productCategory.toLowerCase() === cat) &&
-      (!opts.productId || l.productId === opts.productId),
+      (!opts.productId || l.productId === opts.productId) &&
+      (!ch || l.salesChannel.toLowerCase() === ch),
   );
 }
 const placed = (start: string, end: string, o?: MetricOptions) =>
@@ -69,6 +73,30 @@ export function salesByDay(start: string, end: string, o?: MetricOptions): Daily
       netSales: dollars(gross - disc),
     };
   });
+}
+
+export interface ChannelSales {
+  channel: string;
+  orders: number;
+  units: number;
+  grossSales: number;
+  netSales: number;
+}
+
+/** Sales split by channel (a view of sales by day, summed over the range). Order date. */
+export function salesByChannel(start: string, end: string, o?: MetricOptions): ChannelSales[] {
+  const by = new Map<string, { orders: Set<string>; units: number; gross: number; disc: number }>();
+  for (const l of placed(start, end, o)) {
+    const e = by.get(l.salesChannel) ?? { orders: new Set<string>(), units: 0, gross: 0, disc: 0 };
+    e.orders.add(l.orderId);
+    e.units += l.quantity;
+    e.gross += l.quantity * l.unitPriceCents;
+    e.disc += l.discountCents;
+    by.set(l.salesChannel, e);
+  }
+  return [...by]
+    .map(([channel, e]) => ({ channel, orders: e.orders.size, units: e.units, grossSales: dollars(e.gross), netSales: dollars(e.gross - e.disc) }))
+    .sort((a, b) => b.netSales - a.netSales);
 }
 
 // ------------------------------------------------------------ 2. product velocity

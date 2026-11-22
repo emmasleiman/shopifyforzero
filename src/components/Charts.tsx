@@ -8,18 +8,19 @@ import {
   Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { money, pct, type ChartKind, type ChartSpec, type RepeatPoint, type SalesPoint } from "@/lib/chartSpec";
-import type { ProductVelocity } from "@/lib/metrics";
+import type { ChannelSales, ProductVelocity } from "@/lib/metrics";
 
 const axis = { fontSize: 12, fill: "var(--muted)" };
 const tooltipStyle = { background: "var(--background)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 13 };
 
 export function ChartView({ spec }: { spec: ChartSpec }) {
-  const cls = spec.kind === "card-trend" ? "line" : spec.kind;
+  const cls = spec.kind === "card-trend" ? "line" : spec.kind === "channels" ? "bar" : spec.kind;
   return (
     <figure className={`chart chart-${cls === "empty" ? "card" : cls}`} aria-label={spec.title}>
       <figcaption className="chart-title">{spec.title}</figcaption>
       {spec.kind === "line" && <SalesLine points={spec.points} />}
       {spec.kind === "bar" && <VelocityBars rows={spec.rows} />}
+      {spec.kind === "channels" && <ChannelBars rows={spec.rows} />}
       {spec.kind === "table" && <ReturnsTable spec={spec} />}
       {spec.kind === "card" && <RepeatCard {...spec.value} />}
       {spec.kind === "card-trend" && <RepeatTrend points={spec.points} />}
@@ -85,6 +86,27 @@ function VelocityBars({ rows }: { rows: ProductVelocity[] }) {
   );
 }
 
+function ChannelBars({ rows }: { rows: ChannelSales[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+        <CartesianGrid stroke="var(--border)" horizontal={false} />
+        <XAxis type="number" tick={axis} tickFormatter={(v: number) => `$${v}`} />
+        <YAxis type="category" dataKey="channel" tick={axis} width={110} interval={0} />
+        <Tooltip
+          contentStyle={tooltipStyle}
+          cursor={{ fill: "var(--surface)" }}
+          formatter={(v, _n, item) => {
+            const r = item.payload as ChannelSales;
+            return [`${money(Number(v))} net · ${r.orders} orders`, r.channel];
+          }}
+        />
+        <Bar dataKey="netSales" fill="var(--accent)" radius={[0, 4, 4, 0]} isAnimationActive={false} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
 function ReturnsTable({ spec }: { spec: Extract<ChartSpec, { kind: "table" }> }) {
   return (
     <div className="tbl-wrap">
@@ -137,7 +159,8 @@ function RepeatTrend({ points }: { points: RepeatPoint[] }) {
 }
 
 /** Placeholder in the shape of the chart that's coming, at the same size. */
-export function ChartSkeleton({ kind, caption }: { kind: ChartKind; caption?: string }) {
+export function ChartSkeleton({ kind: k, caption }: { kind: ChartKind; caption?: string }) {
+  const kind = k === "channels" ? "bar" : k;
   const cls = kind === "card-trend" ? "line" : kind;
   return (
     <figure className={`chart chart-${cls}`} aria-busy="true">

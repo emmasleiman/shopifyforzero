@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "check:questions": "tsx scripts/check-questions.ts"
+    "check:questions": "tsx scripts/check-questions.ts",
+    "acceptance": "tsx scripts/acceptance.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.183",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.29",
+    "exceljs": "^4.4.0",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^3.2.7"

@@ -15,7 +15,7 @@ describe("date resolution in tools", () => {
 
   it("rejects ranges outside the order history", () => {
     expect(() => resolveScope({ start: "2024-11-28", end: "2024-12-01" }, TODAY)).toThrow(/covers 2025-05-01 to 2025-10-27/);
-    expect(() => resolveScope({}, TODAY)).toThrow(/period, or both start and end/);
+    expect(() => resolveScope({ start: "2025-10-20", end: "2025-10-30" }, TODAY)).toThrow(/covers/);
   });
 
   it("maps a product name to its id", () => {
@@ -23,10 +23,44 @@ describe("date resolution in tools", () => {
   });
 });
 
+describe("Erik's acceptance cases (tool layer)", () => {
+  it("no or vague date -> team default, last 30 days Sep 27–Oct 26", async () => {
+    expect(resolveScope({}, TODAY)).toMatchObject({ start: "2025-09-27", end: "2025-10-26", dateSource: "default" });
+    const out = await call(buildTools(TODAY), "returns_by_product_and_reason", {});
+    expect(out.dates).toEqual({ start: "2025-09-27", end: "2025-10-26", source: "default" });
+    expect(out.dateNote).toMatch(/team default/);
+    expect(out.result).toHaveLength(5); // Oct 6 Northridge + last week's 4 jackets
+  });
+
+  it("'since labor day' with only a start runs through yesterday", () => {
+    expect(resolveScope({ start: "2025-09-01" }, TODAY)).toMatchObject({ start: "2025-09-01", end: "2025-10-26" });
+  });
+
+  it("channel filter and POS vs online split", async () => {
+    const online = await call(buildTools(TODAY), "sales_by_day", { start: "2025-09-27", end: "2025-10-26", channel: "Online Store" });
+    expect(online.filters.channel).toBe("Online Store");
+    const split = await call(buildTools(TODAY), "sales_by_day", { groupBy: "channel" });
+    expect(split.result.map((r: { channel: string }) => r.channel)).toEqual(
+      expect.arrayContaining(["Online Store", "Point of Sale", "Shop app"]),
+    );
+  });
+
+  it("products the store doesn't sell -> empty result with a notice, not an error", async () => {
+    const out = await call(buildTools(TODAY), "product_velocity", { start: "2025-08-01", end: "2025-08-31", product: "hoodies" });
+    expect(out.error).toBeUndefined();
+    expect(out.result).toEqual([]);
+    expect(out.notice).toMatch(/No products matching "hoodies"/);
+  });
+
+  it("plural product words still match ('beanies and scarves' -> Wool Beanie)", () => {
+    expect(resolveScope({ product: "beanies and scarves" }, TODAY)).toMatchObject({ product: "Wool Beanie" });
+  });
+});
+
 describe("tools", () => {
   it("jackets returned last week -> exact dates and 4 Outerwear returns", async () => {
     const out = await call(buildTools(TODAY), "returns_by_product_and_reason", { period: "last_week", category: "Outerwear" });
-    expect(out.dates).toEqual({ start: "2025-10-20", end: "2025-10-26" });
+    expect(out.dates).toEqual({ start: "2025-10-20", end: "2025-10-26", source: "period" });
     expect(out.result).toHaveLength(4);
   });
 

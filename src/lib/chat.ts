@@ -11,7 +11,7 @@ import {
   addDays, assertRange, DATA_START, resolvePeriod, splitRange, startOfWeek, storeToday, weekday,
   type DateRange,
 } from "./dates";
-import { productVelocity, repeatCustomerShare, returnsByProductAndReason, salesByDay } from "./metrics";
+import { productVelocity, repeatCustomerShare, returnsByProductAndReason, salesByChannel, salesByDay } from "./metrics";
 import { loadOrders } from "./orders";
 
 /** Free OpenRouter model that supports tool calling (see README: "Model choice"). */
@@ -20,53 +20,86 @@ const CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Knitwear", "Accessories"] a
 
 // ------------------------------------------------------------ shared input + date resolution
 
+/** Days covered by the team default range, used when a question gives no date or a vague one. */
+export const DEFAULT_RANGE_DAYS = 30;
+const CHANNELS = ["Online Store", "Point of Sale", "Shop app", "Instagram"] as const;
+
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "use YYYY-MM-DD");
 const baseInput = {
   period: z
     .enum(["last_week", "this_month"])
     .optional()
     .describe('Use for "last week" / "last wk" or "this month". The server turns it into exact dates. Leave start/end empty when set.'),
-  start: isoDate.optional().describe("First day, inclusive, YYYY-MM-DD. Use for every other date phrase."),
+  start: isoDate.optional().describe("First day, inclusive, YYYY-MM-DD, for a specific date phrase. Leave empty when the question has no date or a vague one."),
   end: isoDate.optional().describe("Last day, inclusive, YYYY-MM-DD."),
   category: z
     .enum(CATEGORIES)
     .optional()
     .describe("Jackets, coats, parkas, puffers, shells = Outerwear. Sweaters, cardigans = Knitwear. Jeans, chinos, pants = Bottoms. Tees, shirts = Tops. Beanies, gloves, hats = Accessories."),
-  product: z.string().optional().describe('Part of a product title, e.g. "parka", when the merchant names one product.'),
+  product: z.string().optional().describe('A product word the merchant names that is not a category above, e.g. "parka", "hoodie", "boots".'),
+  channel: z
+    .enum(CHANNELS)
+    .optional()
+    .describe('Sales channel: "online store only" = Online Store; "POS", "in store", "retail" = Point of Sale; "Shop app"; "Instagram".'),
 };
 
 export interface ResolvedScope extends DateRange {
+  dateSource?: "period" | "explicit" | "default";
   category?: string;
+  channel?: string;
   productId?: string;
   product?: string;
+  /** Set when a named product isn't sold here: the chart shows this instead of data. */
+  notice?: string;
 }
+
+/** Team default: the last 30 days ending yesterday (2025-09-27..2025-10-26 when today is 2025-10-27). */
+export function defaultRange(today: string): DateRange {
+  return { start: addDays(today, -DEFAULT_RANGE_DAYS), end: addDays(today, -1) };
+}
+
+const NO_MATCH = "__no_match__";
+const stem = (w: string) => w.toLowerCase().replace(/(ies)$/, "ie").replace(/(es|s)$/, "");
 
 /** Turns tool input into exact dates + filters, or throws a message the model can relay. */
 export function resolveScope(
-  input: { period?: "last_week" | "this_month"; start?: string; end?: string; category?: string; product?: string },
+  input: { period?: "last_week" | "this_month"; start?: string; end?: string; category?: string; product?: string; channel?: string },
   today: string,
 ): ResolvedScope {
-  const range = input.period
-    ? resolvePeriod(input.period, today)
-    : input.start && input.end
-      ? { start: input.start, end: input.end }
-      : (() => { throw new Error("Give either period, or both start and end."); })();
+  let range: DateRange;
+  let dateSource: ResolvedScope["dateSource"];
+  if (input.period) {
+    range = resolvePeriod(input.period, today);
+    dateSource = "period";
+  } else if (input.start) {
+    range = { start: input.start, end: input.end ?? addDays(today, -1) };
+    dateSource = "explicit";
+  } else {
+    range = defaultRange(today);
+    dateSource = "default";
+  }
   assertRange(range.start, range.end);
   if (range.start < DATA_START || range.end > today) {
     throw new Error(`No data for ${range.start}..${range.end}. Order history covers ${DATA_START} to ${today} only.`);
   }
+
   let productId: string | undefined;
   let product: string | undefined;
+  let notice: string | undefined;
   if (input.product) {
-    const hit = loadOrders().find((l) => l.productTitle.toLowerCase().includes(input.product!.toLowerCase()));
-    if (!hit) {
+    const want = input.product.split(/[\s,/&]+|\band\b/i).map(stem).filter((w) => w.length > 2);
+    const hit = loadOrders().find((l) => want.some((w) => l.productTitle.toLowerCase().includes(w)));
+    if (hit) {
+      productId = hit.productId;
+      product = hit.productTitle;
+    } else {
       const titles = [...new Set(loadOrders().map((l) => l.productTitle))].join(", ");
-      throw new Error(`This store has no product matching "${input.product}". It sells: ${titles}.`);
+      productId = NO_MATCH;
+      product = input.product;
+      notice = `No products matching "${input.product}". This store sells: ${titles}.`;
     }
-    productId = hit.productId;
-    product = hit.productTitle;
   }
-  return { ...range, category: input.category, productId, product };
+  return { ...range, dateSource, category: input.category, channel: input.channel, productId, product, notice };
 }
 
 // ------------------------------------------------------------ the four tools
@@ -76,21 +109,24 @@ export const TOOL_DESCRIPTIONS = {
     'Sales over time. Use for: "sales", "revenue", "how much did we sell", "sales per day", "sales by week", ' +
     '"weekly revenue", "revenue last month", "sales trend", "is it slowing", "what\'s going on with sales". ' +
     "Returns orders, units, gross sales, discounts and net sales (gross − discounts) per day, or per week/month " +
-    "with groupBy. Counted on the ORDER date. Not for returns or for ranking products.",
+    "with groupBy, or split by channel (\"online vs POS\", \"online store only\") with groupBy channel / the channel filter. " +
+    "Counted on the ORDER date. Not for returns or for ranking products.",
   product_velocity:
     'Best-sellers and reorders. Use for: "best seller", "top products", "top 10 products", "what sold best", ' +
-    '"top sellers by units", "what should I reorder", "what to restock before BFCM / Black Friday". ' +
+    '"top sellers by units", "what\'s selling", "what sells best", "what should I reorder", ' +
+    '"what to restock before BFCM / Black Friday". Not for stock on hand. ' +
     "Per product: units sold, units returned, net units kept and net units per day, highest first. " +
     "Counted on the ORDER date. It ranks by units, not revenue.",
   returns_by_product_and_reason:
     'Products that came BACK. Use for: "returns", "returned", "returnd", "came back as returns", "coming back", ' +
-    '"most returned", "returns by product / category", "is it a sizing thing", "why are people returning". ' +
+    '"most returned", "returns by product / category", "return rate", "refunds", "return reasons", "is it a sizing thing", ' +
+    '"why are people returning". ' +
     "Groups returns by product and reason with units and refunded dollars. Counted on the RETURN date, " +
     'so "returns last week" means items returned last week. ' +
     'If PEOPLE "came back" (bought again), use repeat_customer_share instead.',
   repeat_customer_share:
     'CUSTOMERS who came back to buy again. Use for: "repeat customers", "returning customers", ' +
-    '"% of orders from returning customers", "ordering a 2nd time", "came back twice", "are repeat customers ' +
+    '"% of orders from returning customers", "ordering a 2nd time", "came back twice", "bought twice", "repeat buyers", "are repeat customers ' +
     'growing", "loyalty". Share of orders from customers who had ordered before. Counted on the ORDER date. ' +
     "Use groupBy week or month to see a trend. Not for product returns.",
 } as const;
@@ -107,8 +143,15 @@ export function buildTools(today: string, onCall?: (name: string, scope: Resolve
     try {
       const scope = resolveScope(input, today);
       onCall?.(name, scope, input);
-      const filters = { category: scope.category, productId: scope.productId };
-      return { dates: { start: scope.start, end: scope.end }, filters: { category: scope.category, product: scope.product }, result: fn({ ...scope, ...filters }) };
+      return {
+        dates: { start: scope.start, end: scope.end, source: scope.dateSource },
+        filters: { category: scope.category, product: scope.product, channel: scope.channel },
+        ...(scope.dateSource === "default" && {
+          dateNote: `No specific dates given, so the team default range (last ${DEFAULT_RANGE_DAYS} days) was used. Say so.`,
+        }),
+        ...(scope.notice && { notice: scope.notice }),
+        result: fn(scope),
+      };
     } catch (e) {
       onCall?.(name, { start: "", end: "" }, input);
       return {
@@ -117,14 +160,15 @@ export function buildTools(today: string, onCall?: (name: string, scope: Resolve
       };
     }
   };
-  const opts = (s: ResolvedScope) => ({ category: s.category, productId: s.productId });
+  const opts = (s: ResolvedScope) => ({ category: s.category, productId: s.productId, channel: s.channel });
 
   return {
     sales_by_day: tool({
       description: TOOL_DESCRIPTIONS.sales_by_day,
-      inputSchema: z.object({ ...baseInput, groupBy: z.enum(["day", "week", "month"]).optional().describe('"week" for weekly sales, "month" for monthly. Default day.') }),
+      inputSchema: z.object({ ...baseInput, groupBy: z.enum(["day", "week", "month", "channel"]).optional().describe('"week" for weekly sales, "month" for monthly, "channel" for a split by sales channel (e.g. "POS vs online"). Default day.') }),
       execute: async (i) =>
         run("sales_by_day", i, (s) => {
+          if (i.groupBy === "channel") return salesByChannel(s.start, s.end, opts(s));
           const days = salesByDay(s.start, s.end, opts(s));
           if (!i.groupBy || i.groupBy === "day") return days;
           return splitRange(s.start, s.end, i.groupBy).map((r) => {
@@ -170,9 +214,13 @@ TODAY is ${weekday(today)} ${today} (store time zone). Never use any other date 
 DATE RULE (all dates are calendar dates, both ends included):
 - "last week", "last wk" -> period "last_week" (most recent complete Monday-Sunday week = ${lastWeek.start} to ${lastWeek.end}).
 - "this month" -> period "this_month" (1st of the month to today = ${thisMonth.start} to ${thisMonth.end}).
-- Anything else -> pass exact start and end yourself. Anchors: yesterday = ${addDays(today, -1)}; last Sunday = ${addDays(startOfWeek(today), -1)};
+- A SPECIFIC date phrase -> pass exact start and end yourself. Anchors: yesterday = ${addDays(today, -1)}; last Sunday = ${addDays(startOfWeek(today), -1)};
   this week started ${startOfWeek(today)}; "last N days" = the N days ending yesterday; "last month" = the previous full calendar month;
-  "since <month>" = 1st of that month to today; "this season" / "since summer" = from 2025-06-01 unless the merchant says otherwise.
+  "in <month>" = that whole month (the current month runs to today); "since <date or holiday>" = that day through yesterday
+  (Labor Day 2025 = 2025-09-01).
+- NO date, or a VAGUE one ("lately", "recently", "rn", "right now", "this season", "since summer", "how are X doing"):
+  leave period, start and end EMPTY. The server applies the team default: the last ${DEFAULT_RANGE_DAYS} days,
+  ${defaultRange(today).start} to ${defaultRange(today).end}. Still call the tool.
 - Returns are counted on the RETURN date; everything else on the ORDER date.
 - Order history covers ${DATA_START} to ${today} only.
 
@@ -181,10 +229,13 @@ RULES:
 2. Products that "came back" = returns. People/customers who "came back" = repeat customers.
 3. Read through typos and shorthand ("jakets returnd last wk" = jackets returned last week).
 4. If the question needs data we don't have, do NOT call a tool. Say what's missing in one sentence:
-   ad spend, ROAS, campaigns, marketing costs, inventory/stock levels, forecasts, or any date before ${DATA_START}
+   ad spend (Meta, Google, Instagram ads), ROAS, campaigns, marketing costs, inventory / stock left, forecasts, or any date before ${DATA_START}
    (e.g. last year's Black Friday, January).
 5. If a question needs two metrics (e.g. sales AND returns), answer the main one and say which other question to ask next.
-6. Start the answer with the exact dates used, e.g. "Oct 20-26, 2025:". Use only numbers from the tool result; never invent or estimate.
+6. Start the answer with the exact dates used, e.g. "Oct 20-26, 2025:". If the result has a dateNote, say the team default range was used.
+   If it has a notice (e.g. no matching products), say that plainly. Use only numbers from the tool result; never invent or estimate.
+8. Products the store may not sell (hoodies, boots, scarves, vests) still get a tool call with that word as "product"; the server
+   reports if nothing matches. Only skip the tool for missing DATA types (rule 4), never for missing products.
 7. Keep it short: a sentence or two, then a compact list or table if useful. If the tool returns an error, relay it plainly
    in your own words. Never write tool-call markup such as <tool_call> in an answer.`;
 }

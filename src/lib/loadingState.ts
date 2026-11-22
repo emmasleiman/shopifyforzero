@@ -3,7 +3,10 @@
  * streaming state (no timers). Pure, so it is unit-tested.
  */
 import { CHART_FOR_TOOL, chartSpec, formatRange, type ChartKind, type ChartSpec, type ToolOutput } from "./chartSpec";
-import { resolvePeriod, type RelativePeriod } from "./dates";
+import { addDays, resolvePeriod, type RelativePeriod } from "./dates";
+
+/** Same team default as the server (src/lib/chat.ts): the last 30 days ending yesterday. */
+const defaultRange = (today: string) => ({ start: addDays(today, -30), end: addDays(today, -1) });
 
 export type ToolPartState =
   | "input-streaming" | "input-available" | "output-available" | "output-error"
@@ -44,9 +47,15 @@ export function partView(tool: string, state: ToolPartState, input: unknown, out
   const kind = CHART_FOR_TOOL[tool];
   if (!kind) return { show: "nothing" };
   if (state === "input-streaming" || state === "input-available") {
-    const inp = input as ToolInput | undefined;
-    const filter = inp?.product ?? inp?.category;
-    return { show: "skeleton", kind, caption: `${VERB[tool]}${captionDates(inp, today)}${filter ? ` · ${filter}` : ""}…` };
+    const inp = input as (ToolInput & { channel?: string }) | undefined;
+    const filter = inp?.product ?? inp?.category ?? inp?.channel;
+    let dates = captionDates(inp, today);
+    // Input is complete but has no dates: the server will apply the team default range.
+    if (!dates && state === "input-available" && !inp?.period && !inp?.start) {
+      const d = defaultRange(today);
+      dates = ` for ${formatRange(d.start, d.end)} (default range)`;
+    }
+    return { show: "skeleton", kind, caption: `${VERB[tool]}${dates}${filter ? ` · ${filter}` : ""}…` };
   }
   if (state === "output-available") {
     const spec = chartSpec(tool, output as ToolOutput);
