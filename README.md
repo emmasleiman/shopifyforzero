@@ -1,15 +1,26 @@
 # Shopify merchant analytics chat (Zero University case project)
 
-Merchants ask questions about their store in plain language ("jakets returnd last wk"). A model called through OpenRouter answers each question with **exactly one metric tool call over exact dates**. The answer is streamed back.
+Merchants ask questions about their store in plain language ("jakets returnd last wk"). A model called through OpenRouter answers each question with **exactly one metric tool call over exact dates**. The answer streams back with a chart drawn from that tool's result.
 
 The project is built on the Shopify order history for May to October 2025. Read **[NOTES.md](NOTES.md)** for the decisions behind it.
+
+![Store dashboard for last week, Oct 20–26 2025: sales line, best-seller bars, a returns table showing 4 jacket returns and $792.15 refunded, and a 50% repeat-customer card](docs/dashboard.png)
+
+*`/dashboard`, last week (Oct 20–26, 2025). The `/chat` page draws the same charts under each answer.*
+
+## Pages
+
+| Page | What it shows |
+|---|---|
+| `/chat` | Merchants type a question. The answer streams in, and **under it the chart for that metric**, drawn from the tool's returned data. |
+| `/dashboard` | All four metrics for **last week** or **this month**, with the same charts and no model involved. Needs no API key. |
 
 ## Setup
 
 ```bash
 npm install
 cp .env.example .env.local      # then paste your OpenRouter key into OPENROUTER_API_KEY
-npm run dev                     # http://localhost:3000/chat
+npm run dev                     # http://localhost:3000 (opens /dashboard); /chat to ask questions
 ```
 
 Get a key at openrouter.ai → **Keys**. Create one for this project and give it a small credit limit. The default model is free, so the key costs nothing to use. Only the server reads the key, in `src/lib/chat.ts`. It isn't `NEXT_PUBLIC_`, so it never reaches the browser, and `.env.local` is git-ignored.
@@ -45,11 +56,35 @@ Each metric gets the chart shape that fits the question it answers.
 | Returns by product and reason | **Table** | Each row combines a product, a reason, units and refunded dollars, which suits a table the merchant can scan and act on. Last week it was four rows of Outerwear: 3 Alpine Down Parkas (defective, too large, too small) and 1 Northridge Insulated Jacket (too small). That makes the sizing problem obvious. |
 | Repeat customer share | **Metrics card** | One number with its context, e.g. **50% — 2 of 4 orders**. The count stays on the card because order volumes are small, and a percentage alone would overstate a swing. A "by month" or "is it growing" question shows the same metric as a small line. |
 
+### How charts are drawn
+
+- **The data comes from the tool result, not the model.** The model writes the sentence. The chart is built (`src/lib/chartSpec.ts`) from exactly what the metric function returned, so the picture and the numbers can't disagree.
+- **The chart is picked by tool name.** Every chart title carries the exact dates and filter, e.g. "Returns · Oct 20–26, 2025 · Outerwear".
+- **No chart for errors.** If the tool returned an error, or no tool was called (ad spend, last year), the answer is text only.
+- **No empty charts.** A range with no orders shows "No orders in this range" (or "No returns in this range").
+- **Straight lines** connect the daily sales points, so the chart doesn't suggest sales between days.
+
+## Loading state
+
+The loading state is driven by each tool part's streaming state from `useChat`, not by timers (`src/lib/loadingState.ts`). It goes through these stages:
+
+| Stage | Merchant sees |
+|---|---|
+| Question sent, no tool picked yet (`submitted`) | "Reading your question…" |
+| Tool chosen, running (`input-streaming` / `input-available`) | A **skeleton in the shape of the coming chart**: a grey line, bars, table rows or a card. The caption fills in once the dates arrive, e.g. "Checking returns for Oct 20–26, 2025 · Outerwear…". |
+| Result arrives (`output-available`) | The real chart **in the same spot and at the same size**, so the page doesn't jump. |
+| Error (`output-error`) or no tool | The skeleton is removed and only the text answer shows. |
+
+**Other details**
+- While an answer runs, **Ask** turns into **Stop** (which calls `stop()`), and the example buttons are disabled.
+- Skeletons stop pulsing for users who prefer reduced motion.
+- Each skeleton carries a "Loading" status for screen readers.
+
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm test` | Tests the metrics, the date rule, the tools and the one-call guard. Needs no key. |
+| `npm test` | Tests the metrics, the date rule, the tools, the one-call guard, chart selection and loading states (42 tests). Needs no key. |
 | `npm run check:questions` | Runs all 30 merchant questions through the real model and writes **[reports/question-check.md](reports/question-check.md)**: the tool, dates and filter for each question, plus pass/fail spot checks. Needs the key. If it stops on the free model's rate limit, run it again and it resumes. |
 | `npm run build` | Production build. |
 
@@ -98,6 +133,10 @@ Some questions ask about ad spend, ROAS, inventory or dates before May 2025. The
 - `src/lib/orders.ts`, `dates.ts`, `metrics.ts`: the loader, the date rule and the four metrics
 - `src/lib/chat.ts`: the tools, the system prompt and the model settings
 - `src/app/api/chat/route.ts`: the streaming chat route
-- `src/app/chat/page.tsx`: the chat UI
+- `src/app/chat/`: the chat UI, with a chart and loading state for each answer
+- `src/app/dashboard/page.tsx`: all four charts for last week or this month
+- `src/components/Charts.tsx`: line, bar, table, card and skeleton components (Recharts)
+- `src/lib/chartSpec.ts`, `src/lib/loadingState.ts`: picks the chart from a tool result and the loading view from a tool state
+- `docs/dashboard.png`: the README screenshot
 - `src/app/api/metrics/route.ts`: the metrics as plain JSON, with no model
 - `scripts/check-questions.ts`: the 30-question check
