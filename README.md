@@ -51,7 +51,7 @@ I ran Erik Vogt's 20 acceptance questions against **https://shopifyforzero2.verc
 
 Every question's tool, arguments, dates and answer are in [reports/acceptance.md](reports/acceptance.md). Erik's sheet, filled in, is [reports/acceptance_results.xlsx](reports/acceptance_results.xlsx).
 
-![Store dashboard for last week, Oct 20–26 2025: sales line, best-seller bars, a returns table showing 4 jacket returns and $792.15 refunded, and a 50% repeat-customer card](docs/dashboard.png)
+![Store dashboard for last week, Oct 20–26 2025: a summary row (net sales $543.50, top seller Wool Beanie, 4 units returned, 50% repeat customers), then a sales line, best-seller bars with the Wool Beanie highlighted, a returns table showing 4 jacket returns and $792.15 refunded, and a 50% repeat-customer card](docs/dashboard.png)
 
 *`/dashboard`, last week (Oct 20–26, 2025). The `/chat` page draws the same charts under each answer.*
 
@@ -60,7 +60,7 @@ Every question's tool, arguments, dates and answer are in [reports/acceptance.md
 | Page | What it shows |
 |---|---|
 | `/chat` | Merchants type a question. The answer streams in, and **under it the chart for that metric**, drawn from the tool's returned data. |
-| `/dashboard` | All four metrics for **last week** or **this month**, with the same charts and no model involved. Needs no API key. |
+| `/dashboard` | A summary row (net sales, top seller, returns, repeat share), then all four metrics for **last week** or **this month**, with the same charts and no model involved. Needs no API key. |
 
 ## Setup
 
@@ -131,6 +131,17 @@ Each metric gets the chart shape that fits the question it answers.
 - **No chart for errors.** If the tool returned an error, or no tool was called (ad spend, last year), the answer is text only.
 - **No empty charts.** A range with no orders shows "No orders in this range" (or "No returns in this range").
 - **Straight lines** connect the daily sales points, so the chart doesn't suggest sales between days.
+- **One highlight per chart.** Orange marks the one thing to look at first: net sales on the line, the top seller, the biggest channel, the most-returned product, or the repeat orders. Everything else is neutral grey, so the eye goes to the answer.
+- **A source line under every chart** says what it counts, e.g. "Counted on the return date, not the order date."
+
+### Design
+
+The look is editorial rather than "app": a warm paper background, black ink and one orange accent. Three typefaces each have one job:
+- **Inter Tight** for headlines and numbers.
+- **Source Serif 4** for explanations and answers.
+- **IBM Plex Mono** for labels, axes and chart titles.
+
+Charts use dotted fills, dashed gridlines and boxed value labels instead of default chart-library styling. Answers render as formatted text (bold, lists, tables), not raw markdown. The pages work at phone width and in dark mode.
 
 ## Loading state
 
@@ -206,7 +217,8 @@ Some questions ask about ad spend, ROAS, inventory or dates before May 2025. The
 - `src/app/dashboard/page.tsx`: all four charts for last week or this month
 - `src/components/Charts.tsx`: line, bar, table, card and skeleton components (Recharts)
 - `src/lib/chartSpec.ts`, `src/lib/loadingState.ts`: picks the chart from a tool result and the loading view from a tool state
-- `docs/dashboard.png`: the README screenshot
+- `docs/dashboard.png`, `docs/chat.png`: screenshots
+- `src/components/Masthead.tsx`: the shared top bar and footer
 - `src/app/api/metrics/route.ts`: the metrics as plain JSON, with no model
 - `src/lib/chatStream.ts`: the chat answer stream, with the markup retry and no-blank fallback
 - `scripts/check-questions.ts`: the 30-question check

@@ -3,76 +3,139 @@
 /**
  * Chart components. Each one draws exactly the data the metric function
  * returned (via chartSpec), never numbers from the model's text.
+ *
+ * Style: dotted fills, dashed grid, mono labels, and one orange highlight per
+ * chart for the thing the merchant should look at first (top seller, biggest
+ * channel, most-returned product, repeat orders). Everything else is neutral.
  */
+import { useId } from "react";
 import {
-  Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, LabelList, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { money, pct, type ChartKind, type ChartSpec, type RepeatPoint, type SalesPoint } from "@/lib/chartSpec";
 import type { ChannelSales, ProductVelocity } from "@/lib/metrics";
 
-const axis = { fontSize: 12, fill: "var(--muted)" };
-const tooltipStyle = { background: "var(--background)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 13 };
+const axis = { fontSize: 11, fill: "var(--muted)" };
+const grid = { stroke: "var(--grid)", strokeDasharray: "3 4" };
+const tooltipStyle = {
+  background: "var(--panel)", border: "1px solid var(--ink)", borderRadius: 0, fontSize: 13, color: "var(--ink)",
+};
+
+/** What each chart counts, printed under it like a source line. */
+const NOTES: Record<ChartSpec["kind"], string> = {
+  line: "Counted on the order date. Net = gross − discounts. Days with no orders show as $0.",
+  bar: "Ranked by net units per day: (sold − returned) ÷ days in range. Top seller highlighted.",
+  channels: "Net sales by channel, counted on the order date. Largest channel highlighted.",
+  table: "Counted on the return date, not the order date. Most-returned product highlighted.",
+  card: "Share of orders placed by customers who had ordered before. Repeat orders highlighted.",
+  "card-trend": "Share of orders placed by customers who had ordered before.",
+  empty: "",
+};
+
+const panelClass = (kind: ChartKind | "empty") =>
+  kind === "card-trend" ? "line" : kind === "channels" ? "bar" : kind === "empty" ? "card" : kind;
 
 export function ChartView({ spec }: { spec: ChartSpec }) {
-  const cls = spec.kind === "card-trend" ? "line" : spec.kind === "channels" ? "bar" : spec.kind;
   return (
-    <figure className={`chart chart-${cls === "empty" ? "card" : cls}`} aria-label={spec.title}>
+    <figure className={`chart chart-${panelClass(spec.kind)}`} aria-label={spec.title}>
       <figcaption className="chart-title">{spec.title}</figcaption>
-      {spec.kind === "line" && <SalesLine points={spec.points} />}
-      {spec.kind === "bar" && <VelocityBars rows={spec.rows} />}
-      {spec.kind === "channels" && <ChannelBars rows={spec.rows} />}
-      {spec.kind === "table" && <ReturnsTable spec={spec} />}
-      {spec.kind === "card" && <RepeatCard {...spec.value} />}
-      {spec.kind === "card-trend" && <RepeatTrend points={spec.points} />}
-      {spec.kind === "empty" && <p className="chart-empty">{spec.message}</p>}
+      <div className="chart-body">
+        {spec.kind === "line" && <SalesLine points={spec.points} />}
+        {spec.kind === "bar" && <VelocityBars rows={spec.rows} />}
+        {spec.kind === "channels" && <ChannelBars rows={spec.rows} />}
+        {spec.kind === "table" && <ReturnsTable spec={spec} />}
+        {spec.kind === "card" && <RepeatCard {...spec.value} />}
+        {spec.kind === "card-trend" && <RepeatTrend points={spec.points} />}
+        {spec.kind === "empty" && <p className="chart-empty">{spec.message}</p>}
+      </div>
+      {NOTES[spec.kind] && <p className="chart-note">{NOTES[spec.kind]}</p>}
     </figure>
+  );
+}
+
+/** SVG dot patterns: a neutral one and the orange highlight. IDs are unique per chart. */
+function usePatterns() {
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const defs = (
+    <defs>
+      {[
+        ["n", "var(--neutral)", "var(--neutral-dot)"],
+        ["a", "var(--accent)", "var(--accent-dot)"],
+      ].map(([k, bg, dot]) => (
+        <pattern key={k} id={`${id}${k}`} width="5" height="5" patternUnits="userSpaceOnUse">
+          <rect width="5" height="5" style={{ fill: bg }} />
+          <circle cx="2.5" cy="2.5" r="0.75" style={{ fill: dot }} />
+        </pattern>
+      ))}
+    </defs>
+  );
+  return { defs, neutral: `url(#${id}n)`, accent: `url(#${id}a)` };
+}
+
+/** A value in a small bordered box at the end of a bar, like a printed callout. */
+function BoxLabel(props: { x?: unknown; y?: unknown; width?: unknown; height?: unknown; value?: unknown; format: (v: number) => string }) {
+  const x = Number(props.x), y = Number(props.y), w = Number(props.width), h = Number(props.height);
+  const text = props.format(Number(props.value));
+  const bw = text.length * 6.8 + 12;
+  const bx = x + Math.max(w, 0) + 6;
+  const by = y + h / 2 - 10;
+  return (
+    <g>
+      <rect x={bx} y={by} width={bw} height={20} style={{ fill: "var(--panel)", stroke: "var(--ink)" }} strokeWidth={1} />
+      <text x={bx + 6} y={by + 14} className="box-label" style={{ fill: "var(--ink)", fontFamily: "var(--mono)", fontSize: 11 }}>{text}</text>
+    </g>
   );
 }
 
 function SalesLine({ points }: { points: SalesPoint[] }) {
   return (
     <>
-    <div className="legend" aria-hidden>
-      <span><i style={{ background: "var(--accent)" }} />Net sales</span>
-      <span><i style={{ background: "var(--accent-2)" }} />Gross sales</span>
-    </div>
-    <ResponsiveContainer width="100%" height={226}>
-      <LineChart data={points} margin={{ top: 6, right: 12, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="var(--border)" vertical={false} />
-        <XAxis dataKey="label" tick={axis} interval="preserveStartEnd" minTickGap={18} />
-        <YAxis tick={axis} width={52} tickFormatter={(v: number) => `$${v}`} />
-        <Tooltip
-          contentStyle={tooltipStyle}
-          formatter={(v, name) => [money(Number(v)), name === "netSales" ? "Net sales" : "Gross sales"]}
-          labelFormatter={(_, p) => {
-            const d = p?.[0]?.payload as SalesPoint | undefined;
-            return d ? (d.start === d.end ? d.label : `${d.start} to ${d.end}`) + ` · ${d.orders} orders` : "";
-          }}
-        />
-        <Line type="linear" name="Gross sales" dataKey="grossSales" stroke="var(--accent-2)" strokeWidth={2} dot={false} isAnimationActive={false} />
-        <Line type="linear" name="Net sales" dataKey="netSales" stroke="var(--accent)" strokeWidth={2.5} dot={points.length <= 31 ? { r: 2.5 } : false} isAnimationActive={false} />
-      </LineChart>
-    </ResponsiveContainer>
+      <div className="legend" aria-hidden>
+        <span><i style={{ borderColor: "var(--accent)" }} />Net sales</span>
+        <span><i className="dashed" style={{ borderColor: "var(--faint)" }} />Gross sales</span>
+      </div>
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart data={points} margin={{ top: 6, right: 12, left: 0, bottom: 0 }}>
+          <CartesianGrid {...grid} vertical={false} />
+          <XAxis dataKey="label" tick={axis} tickLine={false} axisLine={{ stroke: "var(--ink)" }} interval="preserveStartEnd" minTickGap={18} />
+          <YAxis tick={axis} tickLine={false} axisLine={false} width={52} tickFormatter={(v: number) => `$${v}`} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            cursor={{ stroke: "var(--ink)", strokeDasharray: "2 3" }}
+            formatter={(v, name) => [money(Number(v)), name === "netSales" ? "Net sales" : "Gross sales"]}
+            labelFormatter={(_, p) => {
+              const d = p?.[0]?.payload as SalesPoint | undefined;
+              return d ? (d.start === d.end ? d.label : `${d.start} to ${d.end}`) + ` · ${d.orders} orders` : "";
+            }}
+          />
+          <Line type="linear" name="Gross sales" dataKey="grossSales" stroke="var(--faint)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
+          <Line
+            type="linear" name="Net sales" dataKey="netSales" stroke="var(--accent)" strokeWidth={2.5} isAnimationActive={false}
+            dot={points.length <= 31 ? { r: 2.5, fill: "var(--accent)", stroke: "var(--accent)" } : false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </>
   );
 }
 
 function VelocityBars({ rows }: { rows: ProductVelocity[] }) {
-  const top = rows.slice(0, 10);
+  const top = rows.slice(0, 8);
+  const p = usePatterns();
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={top} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="var(--border)" horizontal={false} />
-        <XAxis type="number" tick={axis} allowDecimals />
-        <YAxis type="category" dataKey="title" tick={axis} width={150} interval={0} />
+    <ResponsiveContainer width="100%" height={Math.max(250, top.length * 36 + 20)}>
+      <BarChart data={top} layout="vertical" margin={{ top: 0, right: 64, left: 0, bottom: 0 }} barCategoryGap={8}>
+        {p.defs}
+        <CartesianGrid {...grid} horizontal={false} />
+        <XAxis type="number" tick={axis} tickLine={false} axisLine={{ stroke: "var(--ink)" }} allowDecimals />
+        <YAxis type="category" dataKey="title" tick={axis} tickLine={false} axisLine={false} width={124} interval={0} />
         <Tooltip
-          contentStyle={tooltipStyle}
-          cursor={{ fill: "var(--surface)" }}
+          cursor={{ fill: "var(--accent-soft)", opacity: 0.4 }}
           content={({ active, payload }) => {
             const r = active ? (payload?.[0]?.payload as ProductVelocity | undefined) : undefined;
             if (!r) return null;
             return (
-              <div style={{ ...tooltipStyle, padding: 8 }}>
+              <div style={{ ...tooltipStyle, padding: 10 }}>
                 <b>{r.title}</b>
                 <div>{r.netUnitsPerDay} net units / day</div>
                 <div>Sold {r.unitsSold} · returned {r.unitsReturned} · net {r.netUnits}</div>
@@ -80,34 +143,51 @@ function VelocityBars({ rows }: { rows: ProductVelocity[] }) {
             );
           }}
         />
-        <Bar dataKey="netUnitsPerDay" fill="var(--accent)" radius={[0, 4, 4, 0]} isAnimationActive={false} />
+        <Bar dataKey="netUnitsPerDay" isAnimationActive={false} stroke="var(--neutral-dot)" strokeWidth={1}>
+          {top.map((r, i) => (
+            <Cell key={r.productId} fill={i === 0 && r.netUnitsPerDay > 0 ? p.accent : p.neutral} stroke={i === 0 && r.netUnitsPerDay > 0 ? "var(--accent-dot)" : "var(--neutral-dot)"} />
+          ))}
+          <LabelList dataKey="netUnitsPerDay" content={(l) => <BoxLabel {...l} format={(v) => v.toFixed(2)} />} />
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
 function ChannelBars({ rows }: { rows: ChannelSales[] }) {
+  const p = usePatterns();
+  const max = Math.max(...rows.map((r) => r.netSales));
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="var(--border)" horizontal={false} />
-        <XAxis type="number" tick={axis} tickFormatter={(v: number) => `$${v}`} />
-        <YAxis type="category" dataKey="channel" tick={axis} width={110} interval={0} />
+    <ResponsiveContainer width="100%" height={Math.max(250, rows.length * 44 + 20)}>
+      <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 84, left: 0, bottom: 0 }} barCategoryGap={10}>
+        {p.defs}
+        <CartesianGrid {...grid} horizontal={false} />
+        <XAxis type="number" tick={axis} tickLine={false} axisLine={{ stroke: "var(--ink)" }} tickFormatter={(v: number) => `$${v}`} />
+        <YAxis type="category" dataKey="channel" tick={axis} tickLine={false} axisLine={false} width={110} interval={0} />
         <Tooltip
           contentStyle={tooltipStyle}
-          cursor={{ fill: "var(--surface)" }}
+          cursor={{ fill: "var(--accent-soft)", opacity: 0.4 }}
           formatter={(v, _n, item) => {
             const r = item.payload as ChannelSales;
             return [`${money(Number(v))} net · ${r.orders} orders`, r.channel];
           }}
         />
-        <Bar dataKey="netSales" fill="var(--accent)" radius={[0, 4, 4, 0]} isAnimationActive={false} />
+        <Bar dataKey="netSales" isAnimationActive={false}>
+          {rows.map((r) => (
+            <Cell key={r.channel} fill={r.netSales === max && max > 0 ? p.accent : p.neutral} stroke={r.netSales === max && max > 0 ? "var(--accent-dot)" : "var(--neutral-dot)"} />
+          ))}
+          <LabelList dataKey="netSales" content={(l) => <BoxLabel {...l} format={(v) => money(v)} />} />
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
 function ReturnsTable({ spec }: { spec: Extract<ChartSpec, { kind: "table" }> }) {
+  // Highlight the product with the most units returned.
+  const byProduct = new Map<string, number>();
+  for (const r of spec.rows) byProduct.set(r.productId, (byProduct.get(r.productId) ?? 0) + r.units);
+  const topId = [...byProduct.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   return (
     <div className="tbl-wrap">
       <table className="tbl">
@@ -116,7 +196,7 @@ function ReturnsTable({ spec }: { spec: Extract<ChartSpec, { kind: "table" }> })
         </thead>
         <tbody>
           {spec.rows.map((r) => (
-            <tr key={`${r.productId}-${r.reason}`}>
+            <tr key={`${r.productId}-${r.reason}`} className={r.productId === topId ? "top" : undefined}>
               <td>{r.title}</td><td>{r.reason}</td><td className="num">{r.units}</td><td className="num">{money(r.refunded)}</td>
             </tr>
           ))}
@@ -133,7 +213,13 @@ function RepeatCard({ share, repeatOrders, orders }: { share: number; repeatOrde
   return (
     <div>
       <div className="metric">{pct(share)}</div>
-      <div className="metric-sub">{repeatOrders} of {orders} orders came from customers who had ordered before</div>
+      <div className="metric-sub">{repeatOrders} of {orders} orders came from customers who had ordered before.</div>
+      {orders > 0 && orders <= 30 && (
+        // One cell per order, so a small sample reads as a small sample.
+        <div className="share-track" role="img" aria-label={`${repeatOrders} repeat orders out of ${orders}`}>
+          {Array.from({ length: orders }, (_, i) => <i key={i} className={i < repeatOrders ? "on" : undefined} />)}
+        </div>
+      )}
     </div>
   );
 }
@@ -142,9 +228,9 @@ function RepeatTrend({ points }: { points: RepeatPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={points} margin={{ top: 6, right: 12, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="var(--border)" vertical={false} />
-        <XAxis dataKey="label" tick={axis} />
-        <YAxis tick={axis} width={44} domain={[0, 1]} tickFormatter={(v: number) => pct(v)} />
+        <CartesianGrid {...grid} vertical={false} />
+        <XAxis dataKey="label" tick={axis} tickLine={false} axisLine={{ stroke: "var(--ink)" }} />
+        <YAxis tick={axis} tickLine={false} axisLine={false} width={44} domain={[0, 1]} tickFormatter={(v: number) => pct(v)} />
         <Tooltip
           contentStyle={tooltipStyle}
           formatter={(_, __, item) => {
@@ -152,43 +238,44 @@ function RepeatTrend({ points }: { points: RepeatPoint[] }) {
             return [`${pct(p.share)} (${p.repeatOrders} of ${p.orders} orders)`, "Repeat share"];
           }}
         />
-        <Line type="linear" dataKey="share" stroke="var(--accent)" strokeWidth={2.5} dot={{ r: 3 }} isAnimationActive={false} />
+        <Line type="linear" dataKey="share" stroke="var(--accent)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--accent)", stroke: "var(--accent)" }} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );
 }
 
 /** Placeholder in the shape of the chart that's coming, at the same size. */
-export function ChartSkeleton({ kind: k, caption }: { kind: ChartKind; caption?: string }) {
-  const kind = k === "channels" ? "bar" : k;
-  const cls = kind === "card-trend" ? "line" : kind;
+export function ChartSkeleton({ kind, caption }: { kind: ChartKind; caption?: string }) {
+  const shape = panelClass(kind);
   return (
-    <figure className={`chart chart-${cls}`} aria-busy="true">
+    <figure className={`chart chart-${shape}`} aria-busy="true">
       <span className="sr-only" role="status">Loading</span>
       <figcaption className="chart-title">{caption ?? "Loading…"}</figcaption>
-      {kind === "line" || kind === "card-trend" ? (
-        <svg width="100%" height="250" viewBox="0 0 400 250" preserveAspectRatio="none" aria-hidden>
-          <polyline className="sk" points="0,200 60,170 120,185 180,120 240,140 300,90 360,110 400,70" fill="none" stroke="var(--skeleton)" strokeWidth="6" />
-        </svg>
-      ) : kind === "bar" ? (
-        <div aria-hidden style={{ display: "grid", gap: 12, paddingTop: 4 }}>
-          {[92, 74, 60, 48, 40, 30, 22].map((w, i) => (
-            <div key={i} style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <div className="sk" style={{ width: 120, height: 12 }} />
-              <div className="sk" style={{ width: `${w}%`, maxWidth: "calc(100% - 130px)", height: 22 }} />
-            </div>
-          ))}
-        </div>
-      ) : kind === "table" ? (
-        <div aria-hidden style={{ display: "grid", gap: 10 }}>
-          {[0, 1, 2, 3, 4].map((i) => <div key={i} className="sk" style={{ height: 22, opacity: i === 0 ? 0.7 : 1 }} />)}
-        </div>
-      ) : (
-        <div aria-hidden>
-          <div className="sk" style={{ width: 120, height: 40, marginBottom: 10 }} />
-          <div className="sk" style={{ width: "70%", height: 14 }} />
-        </div>
-      )}
+      <div className="chart-body">
+        {shape === "line" ? (
+          <svg width="100%" height="230" viewBox="0 0 400 230" preserveAspectRatio="none" aria-hidden>
+            <polyline className="sk" points="0,190 60,160 120,175 180,110 240,130 300,80 360,100 400,60" fill="none" stroke="var(--skeleton)" strokeWidth="6" />
+          </svg>
+        ) : shape === "bar" ? (
+          <div aria-hidden style={{ display: "grid", gap: 12, paddingTop: 4 }}>
+            {[92, 74, 60, 48, 40, 30].map((w, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div className="sk" style={{ width: 120, height: 12 }} />
+                <div className="sk" style={{ width: `${w}%`, maxWidth: "calc(100% - 130px)", height: 24 }} />
+              </div>
+            ))}
+          </div>
+        ) : shape === "table" ? (
+          <div aria-hidden style={{ display: "grid", gap: 12 }}>
+            {[0, 1, 2, 3, 4].map((i) => <div key={i} className="sk" style={{ height: 20, opacity: i === 0 ? 0.7 : 1 }} />)}
+          </div>
+        ) : (
+          <div aria-hidden>
+            <div className="sk" style={{ width: 160, height: 60, marginBottom: 14 }} />
+            <div className="sk" style={{ width: "70%", height: 14 }} />
+          </div>
+        )}
+      </div>
     </figure>
   );
 }
