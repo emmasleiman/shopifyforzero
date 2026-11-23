@@ -59,6 +59,27 @@ export function defaultRange(today: string): DateRange {
 }
 
 const NO_MATCH = "__no_match__";
+const STOP_WORDS = new Set(["the", "our", "all", "any"]);
+/**
+ * Generic words for a whole category (after stem()). Words that are part of one
+ * product's title (sweater, shirt, jeans, beanie) stay product filters.
+ */
+const CATEGORY_WORDS: Record<string, (typeof CATEGORIES)[number]> = {
+  jacket: "Outerwear", coat: "Outerwear", puffer: "Outerwear", outerwear: "Outerwear",
+  knitwear: "Knitwear", knit: "Knitwear",
+  top: "Tops", bottom: "Bottoms", pant: "Bottoms", trouser: "Bottoms",
+  accessorie: "Accessories", accessory: "Accessories",
+};
+
+/**
+ * Some free models (Nemotron) sometimes write their native tool-call markup as
+ * text instead of making a real tool call, usually when the call has no
+ * arguments. Returns the tool it meant, so the route can retry with that tool forced.
+ */
+export function markupToolName(text: string, toolNames: string[]): string | undefined {
+  const m = /<tool_call>\s*<function=([\w-]+)>/.exec(text);
+  return m && toolNames.includes(m[1]) ? m[1] : undefined;
+}
 const stem = (w: string) => w.toLowerCase().replace(/(ies)$/, "ie").replace(/(es|s)$/, "");
 
 /** Turns tool input into exact dates + filters, or throws a message the model can relay. */
@@ -86,8 +107,16 @@ export function resolveScope(
   let productId: string | undefined;
   let product: string | undefined;
   let notice: string | undefined;
-  if (input.product) {
-    const want = input.product.split(/[\s,/&]+|\band\b/i).map(stem).filter((w) => w.length > 2);
+  let category = input.category;
+  // "jackets" / "coats" name a whole category, not the one product with "Jacket" in its title.
+  const words = input.product?.split(/[\s,/&]+|\band\b/i).map(stem).filter((w) => w.length > 2 && !STOP_WORDS.has(w)) ?? [];
+  const categoryWord =
+    words.length > 0 && words.every((w) => CATEGORY_WORDS[w] && CATEGORY_WORDS[w] === CATEGORY_WORDS[words[0]])
+      ? CATEGORY_WORDS[words[0]]
+      : undefined;
+  if (categoryWord && !category) category = categoryWord;
+  if (input.product && !categoryWord) {
+    const want = words;
     const hit = loadOrders().find((l) => want.some((w) => l.productTitle.toLowerCase().includes(w)));
     if (hit) {
       productId = hit.productId;
@@ -99,7 +128,7 @@ export function resolveScope(
       notice = `No products matching "${input.product}". This store sells: ${titles}.`;
     }
   }
-  return { ...range, dateSource, category: input.category, channel: input.channel, productId, product, notice };
+  return { ...range, dateSource, category, channel: input.channel, productId, product, notice };
 }
 
 // ------------------------------------------------------------ the four tools
