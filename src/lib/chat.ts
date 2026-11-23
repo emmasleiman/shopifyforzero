@@ -25,22 +25,19 @@ export const DEFAULT_RANGE_DAYS = 30;
 const CHANNELS = ["Online Store", "Point of Sale", "Shop app", "Instagram"] as const;
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "use YYYY-MM-DD");
+/**
+ * Some models send "" (or null) for a field they mean to leave out, e.g. {"period":"","start":""}
+ * for a question with no date. Treat that as "not given" instead of rejecting the call.
+ */
+const blank = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((v) => (v === "" || v === null ? undefined : v), schema.optional());
 const baseInput = {
-  period: z
-    .enum(["last_week", "this_month"])
-    .optional()
-    .describe('Use for "last week" / "last wk" or "this month". The server turns it into exact dates. Leave start/end empty when set.'),
-  start: isoDate.optional().describe("First day, inclusive, YYYY-MM-DD, for a specific date phrase. Leave empty when the question has no date or a vague one."),
-  end: isoDate.optional().describe("Last day, inclusive, YYYY-MM-DD."),
-  category: z
-    .enum(CATEGORIES)
-    .optional()
-    .describe("Jackets, coats, parkas, puffers, shells = Outerwear. Sweaters, cardigans = Knitwear. Jeans, chinos, pants = Bottoms. Tees, shirts = Tops. Beanies, gloves, hats = Accessories."),
-  product: z.string().optional().describe('A product word the merchant names that is not a category above, e.g. "parka", "hoodie", "boots".'),
-  channel: z
-    .enum(CHANNELS)
-    .optional()
-    .describe('Sales channel: "online store only" = Online Store; "POS", "in store", "retail" = Point of Sale; "Shop app"; "Instagram".'),
+  period: blank(z.enum(["last_week", "this_month"])).describe('Use for "last week" / "last wk" or "this month". The server turns it into exact dates. Leave start/end empty when set.'),
+  start: blank(isoDate).describe("First day, inclusive, YYYY-MM-DD, for a specific date phrase. Leave empty when the question has no date or a vague one."),
+  end: blank(isoDate).describe("Last day, inclusive, YYYY-MM-DD."),
+  category: blank(z.enum(CATEGORIES)).describe("Jackets, coats, parkas, puffers, shells = Outerwear. Sweaters, cardigans = Knitwear. Jeans, chinos, pants = Bottoms. Tees, shirts = Tops. Beanies, gloves, hats = Accessories."),
+  product: blank(z.string()).describe('A product word the merchant names that is not a category above, e.g. "parka", "hoodie", "boots".'),
+  channel: blank(z.enum(CHANNELS)).describe('Sales channel: "online store only" = Online Store; "POS", "in store", "retail" = Point of Sale; "Shop app"; "Instagram".'),
 };
 
 export interface ResolvedScope extends DateRange {
@@ -196,7 +193,7 @@ export function buildTools(today: string, onCall?: (name: string, scope: Resolve
   return {
     sales_by_day: tool({
       description: TOOL_DESCRIPTIONS.sales_by_day,
-      inputSchema: z.object({ ...baseInput, groupBy: z.enum(["day", "week", "month", "channel"]).optional().describe('"week" for weekly sales, "month" for monthly, "channel" for a split by sales channel (e.g. "POS vs online"). Default day.') }),
+      inputSchema: z.object({ ...baseInput, groupBy: blank(z.enum(["day", "week", "month", "channel"])).describe('"week" for weekly sales, "month" for monthly, "channel" for a split by sales channel (e.g. "POS vs online"). Default day.') }),
       execute: async (i) =>
         run("sales_by_day", i, (s) => {
           if (i.groupBy === "channel") return salesByChannel(s.start, s.end, opts(s));
@@ -222,7 +219,7 @@ export function buildTools(today: string, onCall?: (name: string, scope: Resolve
     }),
     repeat_customer_share: tool({
       description: TOOL_DESCRIPTIONS.repeat_customer_share,
-      inputSchema: z.object({ ...baseInput, groupBy: z.enum(["week", "month"]).optional().describe("Split the range to show a trend.") }),
+      inputSchema: z.object({ ...baseInput, groupBy: blank(z.enum(["week", "month"])).describe("Split the range to show a trend.") }),
       execute: async (i) =>
         run("repeat_customer_share", i, (s) =>
           i.groupBy

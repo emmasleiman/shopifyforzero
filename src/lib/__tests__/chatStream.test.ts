@@ -70,6 +70,24 @@ describe("tool-call markup written as text (seen live on AQ-02 and AQ-08)", () =
     expect(r.chunks.filter((c) => c.type === "finish")).toHaveLength(1);
   });
 
+  it('a call with empty strings ({"period":""}) uses the default range instead of failing (AQ-08 live)', async () => {
+    const r = await run([
+      [{ type: "tool-call", toolCallId: "t1", toolName: "returns_by_product_and_reason", input: '{"period":"","start":"","end":""}' }, finish("tool-calls")],
+      [...textParts("Sep 27-Oct 26, 2025: 5 items came back."), finish("stop")],
+    ]);
+    const out = r.chunks.find((c) => c.type === "tool-output-available") as unknown as { output: { dates: { start: string; end: string; source: string } } };
+    expect(out.output.dates).toEqual({ start: "2025-09-27", end: "2025-10-26", source: "default" });
+    expect(r.text).toContain("5 items");
+  });
+
+  it("a rejected tool call with no answer text still gets a reply", async () => {
+    const r = await run([
+      [{ type: "tool-call", toolCallId: "t1", toolName: "returns_by_product_and_reason", input: '{"period":"yesterday"}' }, finish("tool-calls")],
+      [finish("stop")],
+    ]);
+    expect(r.text).toContain("ask it another way");
+  });
+
   it("leaves normal answers alone (no tool, no retry)", async () => {
     const r = await run([[...textParts("We don't have ad spend data."), finish("stop")]]);
     expect(r.text).toBe("We don't have ad spend data.");
