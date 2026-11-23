@@ -11,7 +11,7 @@ const usage = {
 const finish = (unified: string) => ({ type: "finish", finishReason: { unified, raw: unified }, usage });
 const textParts = (text: string) => [
   { type: "text-start", id: "1" },
-  ...text.match(/.{1,4}/gs)!.map((delta) => ({ type: "text-delta", id: "1", delta })),
+  ...text.match(/[\s\S]{1,4}/g)!.map((delta) => ({ type: "text-delta", id: "1", delta })),
   { type: "text-end", id: "1" },
 ];
 
@@ -39,7 +39,8 @@ async function run(replies: object[][]) {
   };
   const chunks: { type: string; delta?: string }[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for await (const c of chatStream(settings as any, [{ role: "user", content: "how are returns doing" }])) chunks.push(c);
+  const reader = chatStream(settings as any, [{ role: "user", content: "how are returns doing" }]).getReader();
+  for (let r = await reader.read(); !r.done; r = await reader.read()) chunks.push(r.value as { type: string; delta?: string });
   const text = chunks.filter((c) => c.type === "text-delta").map((c) => c.delta).join("");
   return { chunks, text, calls, modelCalls: model.doStreamCalls };
 }
@@ -50,6 +51,8 @@ describe("tool-call markup written as text (seen live on AQ-02 and AQ-08)", () =
     expect(markupToolName("<tool_call>\n<function=product_velocity>\n</function>\n</tool_call>", tools)).toBe("product_velocity");
     expect(markupToolName("<tool_call><function=hack></function></tool_call>", tools)).toBeUndefined();
     expect(markupToolName("Sales were $120.", tools)).toBeUndefined();
+    expect(markupToolName('<tool_call>{"name": "returns_by_product_and_reason", "arguments": {}}</tool_call>', tools)).toBe("returns_by_product_and_reason");
+    expect(markupToolName("<tool_call>\nreturns_by_product_and_reason\n</tool_call>", tools)).toBe("returns_by_product_and_reason");
   });
 
   it("hides the markup and retries once with that tool forced", async () => {
@@ -72,6 +75,15 @@ describe("tool-call markup written as text (seen live on AQ-02 and AQ-08)", () =
     expect(r.text).toBe("We don't have ad spend data.");
     expect(r.modelCalls).toHaveLength(1);
     expect(r.chunks.filter((c) => c.type === "finish")).toHaveLength(1);
+  });
+
+  it("unreadable markup or an empty reply never leaves a blank answer", async () => {
+    for (const reply of [[...textParts("<tool_call>\n</tool_call>"), finish("stop")], [finish("stop")]]) {
+      const r = await run([reply]);
+      expect(r.text).toContain("ask it another way");
+      expect(r.text).not.toContain("<tool_call");
+      expect(r.modelCalls).toHaveLength(1);
+    }
   });
 
   it("short text that starts like markup still shows", async () => {

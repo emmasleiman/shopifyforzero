@@ -77,8 +77,10 @@ const CATEGORY_WORDS: Record<string, (typeof CATEGORIES)[number]> = {
  * arguments. Returns the tool it meant, so the route can retry with that tool forced.
  */
 export function markupToolName(text: string, toolNames: string[]): string | undefined {
-  const m = /<tool_call>\s*<function=([\w-]+)>/.exec(text);
-  return m && toolNames.includes(m[1]) ? m[1] : undefined;
+  // Formats seen: <function=NAME>, {"name": "NAME", ...}, or just the tool name inside <tool_call>.
+  const named = /<function=([\w-]+)>/.exec(text)?.[1] ?? /"name"\s*:\s*"([\w-]+)"/.exec(text)?.[1];
+  if (named && toolNames.includes(named)) return named;
+  return toolNames.find((t) => text.includes(t));
 }
 const stem = (w: string) => w.toLowerCase().replace(/(ies)$/, "ie").replace(/(es|s)$/, "");
 
