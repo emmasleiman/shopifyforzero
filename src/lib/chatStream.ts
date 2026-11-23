@@ -72,17 +72,19 @@ export function chatStream(s: ReturnType<typeof chatSettings>, modelMessages: Mo
       let called = false;
       let sawText = false;
       let sawOutput = false;
+      let sawError = false;
       for await (const chunk of first.toUIMessageStream({ sendFinish: false, onError: friendlyError })) {
         if (chunk.type === "tool-input-start" || chunk.type === "tool-input-available") called = true;
         if (chunk.type === "text-delta" && chunk.delta.trim()) sawText = true;
         if (chunk.type === "tool-output-available") sawOutput = true;
+        if (chunk.type === "error") sawError = true;
         writer.write(chunk);
       }
       const markup = called ? "" : hold.markup();
       const meant = markup ? markupToolName(markup, Object.keys(s.tools)) : undefined;
       if (!meant) {
         // Markup we could not read, or an empty reply: never leave the merchant with a blank answer.
-        if (markup || (!sawText && !sawOutput)) {
+        if (!sawError && (markup || (!sawText && !sawOutput))) {
           writer.write({ type: "text-start", id: "fallback" });
           writer.write({ type: "text-delta", id: "fallback", delta: "Sorry, I couldn't work that one out. Could you ask it another way, e.g. \"returns last 30 days\"?" });
           writer.write({ type: "text-end", id: "fallback" });

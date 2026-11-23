@@ -14,7 +14,42 @@ The project is built on the Shopify order history for May to October 2025. Read 
 | Ask a question | https://shopifyforzero2.vercel.app/chat |
 | Metric API | https://shopifyforzero2.vercel.app/api/metrics |
 
-The live run of Erik Vogt's acceptance questions is in **[reports/acceptance.md](reports/acceptance.md)**. It also fills in his sheet, saved as [reports/acceptance_results.xlsx](reports/acceptance_results.xlsx).
+The live run of Erik Vogt's acceptance questions is summarised below, under "Acceptance results (live)".
+
+## Acceptance results (live)
+
+I ran Erik Vogt's 20 acceptance questions against **https://shopifyforzero2.vercel.app** on Nov 22–23, 2026 (`npm run acceptance` with `BASE_URL` set to the live site). Model: `nvidia/nemotron-3.5-super-vl:free`. Store today: 2025-10-27.
+
+| Threshold | Result | |
+|---|---|---|
+| ≥ 18 of 20 correct tool calls | **19 correct out of 19 answered.** AQ-08 is not yet re-run because of the daily limit. | **Met:** 19 ≥ 18 even if AQ-08 fails |
+| 0 render crashes | **0** | **Met** |
+| < 5.0 s to the first chart on every question | **Max 17.25 s.** AQ-14 took 17.25 s and AQ-04 took 5.16 s; the other 17 answered in 1.3–4.3 s. | **Not met** |
+
+**What the first live run found, and what I fixed.** The first full run scored 17/20. It surfaced three real bugs, and I fixed each one and redeployed. The first run's report is kept in [reports/acceptance_first_run.md](reports/acceptance_first_run.md).
+- **AQ-03: "jackets" matched one product instead of the category.** It filtered to the Northridge Insulated Jacket and missed the three parka returns. Generic words like jackets and coats now mean the Outerwear category.
+- **AQ-02: the model wrote `<tool_call>` markup as text** instead of calling the tool. The server now hides that markup and retries once with the tool it named. It is still one tool call per question. Re-run live: correct, 2.86 s.
+- **AQ-08: the model sent empty strings for "no date"** (`{"period":"","start":"","end":""}`), so validation rejected the call. Empty strings now mean "not given", so the team default range applies. A reply with no text now says so instead of going blank.
+  - The re-run of AQ-08 hit the free daily limit (50 requests a day). It is the one question still to confirm live.
+
+**Why two questions were slow.** Nemotron is a reasoning model: it streams its reasoning before it calls the tool, and on the free tier that time varies with OpenRouter's queue. The tool itself runs in milliseconds. I haven't changed the model settings to hit 5 s, because any change has to be checked live first.
+
+**AQ-03, "which jackets came back the most last week".** A table titled **"Returns · Oct 20–26, 2025 · Outerwear"**, 4 units and $792.15 refunded:
+
+| Product | Reason | Units | Refunded |
+|---|---|---|---|
+| Alpine Down Parka | Defective | 1 | $219.00 |
+| Alpine Down Parka | Too large | 1 | $219.00 |
+| Alpine Down Parka | Too small | 1 | $219.00 |
+| Northridge Insulated Jacket | Too small | 1 | $135.15 |
+
+**AQ-07, "what's my ad spend on Meta this month".** The model calls no tool and draws no chart. It says plainly that the store has no Meta ad spend or marketing cost data.
+
+**Vague dates use the team default, Sep 27 – Oct 26, 2025, and the answer says so.** Examples:
+- "refunds been bad lately?": 5 returned units, $920.94 refunded.
+- "repeat customer share": 41.7%, 5 of 12 orders.
+
+Every question's tool, arguments, dates and answer are in [reports/acceptance.md](reports/acceptance.md). Erik's sheet, filled in, is [reports/acceptance_results.xlsx](reports/acceptance_results.xlsx).
 
 ![Store dashboard for last week, Oct 20–26 2025: sales line, best-seller bars, a returns table showing 4 jacket returns and $792.15 refunded, and a 50% repeat-customer card](docs/dashboard.png)
 
@@ -117,8 +152,9 @@ The loading state is driven by each tool part's streaming state from `useChat`, 
 
 | Command | What it does |
 |---|---|
-| `npm test` | Tests the metrics, the date rule, the tools, the one-call guard, chart selection and loading states (42 tests). Needs no key. |
+| `npm test` | Tests the metrics, the date rule, the tools, the one-call guard, chart selection, loading states and the chat stream with a mock model (56 tests). Needs no key. |
 | `npm run check:questions` | Runs all 30 merchant questions through the real model and writes **[reports/question-check.md](reports/question-check.md)**: the tool, dates and filter for each question, plus pass/fail spot checks. Needs the key. If it stops on the free model's rate limit, run it again and it resumes. |
+| `npm run acceptance` | Runs Erik Vogt's 20 acceptance questions against `BASE_URL` (the live site, or localhost) and writes `reports/acceptance.md` and `reports/acceptance_results.xlsx`. It resumes if the free limit stops it. |
 | `npm run build` | Production build. |
 
 ## How it works
@@ -172,4 +208,7 @@ Some questions ask about ad spend, ROAS, inventory or dates before May 2025. The
 - `src/lib/chartSpec.ts`, `src/lib/loadingState.ts`: picks the chart from a tool result and the loading view from a tool state
 - `docs/dashboard.png`: the README screenshot
 - `src/app/api/metrics/route.ts`: the metrics as plain JSON, with no model
+- `src/lib/chatStream.ts`: the chat answer stream, with the markup retry and no-blank fallback
 - `scripts/check-questions.ts`: the 30-question check
+- `scripts/acceptance.ts`: Erik's acceptance run
+

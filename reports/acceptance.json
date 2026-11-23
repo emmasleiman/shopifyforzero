@@ -1,0 +1,1565 @@
+[
+  {
+    "id": "AQ-01",
+    "question": "sales last 30 days online store only",
+    "tool": "sales_by_day",
+    "args": {
+      "start": "2025-09-27",
+      "end": "2025-10-26",
+      "channel": "Online Store"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "explicit"
+      },
+      "filters": {
+        "channel": "Online Store"
+      },
+      "result": [
+        {
+          "date": "2025-09-27",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-28",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-29",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-30",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-01",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-02",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 243,
+          "discounts": 0,
+          "netSales": 243
+        },
+        {
+          "date": "2025-10-03",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-04",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-05",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-06",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-07",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 219,
+          "discounts": 0,
+          "netSales": 219
+        },
+        {
+          "date": "2025-10-08",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-09",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-10",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-11",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 0,
+          "netSales": 159
+        },
+        {
+          "date": "2025-10-12",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-13",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-14",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-15",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 236,
+          "discounts": 23.6,
+          "netSales": 212.4
+        },
+        {
+          "date": "2025-10-16",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-17",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-18",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-19",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-20",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-21",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 0,
+          "netSales": 159
+        },
+        {
+          "date": "2025-10-22",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-23",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 265,
+          "discounts": 26.5,
+          "netSales": 238.5
+        },
+        {
+          "date": "2025-10-24",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-25",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-26",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025: Online store net sales were $1,230.90 across 6 orders (9 units), with $1,281.00 gross and $50.10 in discounts.",
+    "seconds": 4.3020651,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-04",
+    "question": "are repeat customers growing since summer",
+    "tool": "repeat_customer_share",
+    "args": {
+      "groupBy": "week"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "start": "2025-09-27",
+          "end": "2025-09-28",
+          "orders": 0,
+          "repeatOrders": 0,
+          "share": 0
+        },
+        {
+          "start": "2025-09-29",
+          "end": "2025-10-05",
+          "orders": 2,
+          "repeatOrders": 1,
+          "share": 0.5
+        },
+        {
+          "start": "2025-10-06",
+          "end": "2025-10-12",
+          "orders": 3,
+          "repeatOrders": 1,
+          "share": 0.3333
+        },
+        {
+          "start": "2025-10-13",
+          "end": "2025-10-19",
+          "orders": 3,
+          "repeatOrders": 1,
+          "share": 0.3333
+        },
+        {
+          "start": "2025-10-20",
+          "end": "2025-10-26",
+          "orders": 4,
+          "repeatOrders": 2,
+          "share": 0.5
+        }
+      ]
+    },
+    "answer": "Sep 27–Oct 26, 2025: Repeat customer share fluctuated between 33% and 50% across the last four weeks, ending at 50% in the most recent week (Oct 20–26), so it isn’t clearly growing. (No specific dates given, so the team default range was used.)",
+    "seconds": 5.1595859000000015,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-05",
+    "question": "sales and returns on jackets last week",
+    "tool": "sales_by_day",
+    "args": {
+      "period": "last_week",
+      "category": "Outerwear"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "source": "period"
+      },
+      "filters": {
+        "category": "Outerwear"
+      },
+      "result": [
+        {
+          "date": "2025-10-20",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-21",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 0,
+          "netSales": 159
+        },
+        {
+          "date": "2025-10-22",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-23",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 219,
+          "discounts": 21.9,
+          "netSales": 197.1
+        },
+        {
+          "date": "2025-10-24",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-25",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-26",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        }
+      ]
+    },
+    "answer": "Oct 20–26, 2025: Jackets (Outerwear) had 2 orders / 2 units, $378 gross sales, $21.90 in discounts, and $356.10 net sales. All activity was on Oct 21 ($159 net) and Oct 23 ($197.10 net).\n\nReturns aren't in this result — ask \"returns on jackets last week\" for that metric.",
+    "seconds": 2.8976039999999994,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-06",
+    "question": "top 5 hoodies in august",
+    "tool": "product_velocity",
+    "args": {
+      "start": "2025-08-01",
+      "end": "2025-08-31",
+      "product": "hoodie"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-08-01",
+        "end": "2025-08-31",
+        "source": "explicit"
+      },
+      "filters": {
+        "product": "hoodie"
+      },
+      "notice": "No products matching \"hoodie\". This store sells: Organic Cotton Tee, Utility Chino, Harbor Rain Shell, Linen Button Shirt, Selvedge Slim Jeans, Merino Crew Sweater, Northridge Insulated Jacket, Alpine Down Parka, Wool Beanie, Cable Knit Cardigan, Leather Gloves.",
+      "result": []
+    },
+    "answer": "Aug 1–31, 2025: No products matching \"hoodie\" were found. This store sells: Organic Cotton Tee, Utility Chino, Harbor Rain Shell, Linen Button Shirt, Selvedge Slim Jeans, Merino Crew Sweater, Northridge Insulated Jacket, Alpine Down Parka, Wool Beanie, Cable Knit Cardigan, Leather Gloves.",
+    "seconds": 3.505630600000004,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-07",
+    "question": "what's my ad spend on Meta this month",
+    "tool": null,
+    "answer": "I don't have access to Meta ad spend or any marketing cost data for your store.",
+    "seconds": 1.5894567000000024,
+    "rendered": true,
+    "correct": true,
+    "why": "no tool called; no-data message"
+  },
+  {
+    "id": "AQ-09",
+    "question": "how much did i make since labor day",
+    "tool": "sales_by_day",
+    "args": {
+      "start": "2025-09-01",
+      "end": "2025-10-26"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-01",
+        "end": "2025-10-26",
+        "source": "explicit"
+      },
+      "filters": {},
+      "result": [
+        {
+          "date": "2025-09-01",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-02",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-03",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-04",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-05",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-06",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-07",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-08",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 88,
+          "discounts": 0,
+          "netSales": 88
+        },
+        {
+          "date": "2025-09-09",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-10",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-11",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-12",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-13",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-14",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-15",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-16",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-17",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-18",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-19",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-20",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-21",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-22",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-23",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-24",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 15.9,
+          "netSales": 143.1
+        },
+        {
+          "date": "2025-09-25",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-26",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-27",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-28",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-29",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-09-30",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-01",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-02",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 243,
+          "discounts": 0,
+          "netSales": 243
+        },
+        {
+          "date": "2025-10-03",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-04",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 23.85,
+          "netSales": 135.15
+        },
+        {
+          "date": "2025-10-05",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-06",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-07",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 219,
+          "discounts": 0,
+          "netSales": 219
+        },
+        {
+          "date": "2025-10-08",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-09",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 144,
+          "discounts": 0,
+          "netSales": 144
+        },
+        {
+          "date": "2025-10-10",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-11",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 0,
+          "netSales": 159
+        },
+        {
+          "date": "2025-10-12",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-13",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-14",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 219,
+          "discounts": 0,
+          "netSales": 219
+        },
+        {
+          "date": "2025-10-15",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 236,
+          "discounts": 23.6,
+          "netSales": 212.4
+        },
+        {
+          "date": "2025-10-16",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-17",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-18",
+          "orders": 1,
+          "units": 3,
+          "grossSales": 204,
+          "discounts": 0,
+          "netSales": 204
+        },
+        {
+          "date": "2025-10-19",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-20",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-21",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 159,
+          "discounts": 0,
+          "netSales": 159
+        },
+        {
+          "date": "2025-10-22",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-23",
+          "orders": 1,
+          "units": 2,
+          "grossSales": 265,
+          "discounts": 26.5,
+          "netSales": 238.5
+        },
+        {
+          "date": "2025-10-24",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "date": "2025-10-25",
+          "orders": 1,
+          "units": 3,
+          "grossSales": 72,
+          "discounts": 0,
+          "netSales": 72
+        },
+        {
+          "date": "2025-10-26",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 74,
+          "discounts": 0,
+          "netSales": 74
+        }
+      ]
+    },
+    "answer": "Sep 1 – Oct 26, 2025: You made **$2,310.15 net** ($2,400 gross, $89.85 in discounts) across 14 orders and 21 units.",
+    "seconds": 2.0159998999999953,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-10",
+    "question": "how many ppl bought twice in october",
+    "tool": "repeat_customer_share",
+    "args": {
+      "period": "this_month"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-10-01",
+        "end": "2025-10-27",
+        "source": "period"
+      },
+      "filters": {},
+      "result": {
+        "orders": 13,
+        "repeatOrders": 5,
+        "share": 0.3846
+      }
+    },
+    "answer": "Oct 1–27, 2025: 5 people bought twice (repeat orders), out of 13 total orders — a 38.46% repeat-customer share.",
+    "seconds": 2.494617200000008,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-11",
+    "question": "what's selling rn",
+    "tool": "product_velocity",
+    "args": {},
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "productId": "P-1010",
+          "title": "Wool Beanie",
+          "category": "Accessories",
+          "unitsSold": 4,
+          "unitsReturned": 0,
+          "netUnits": 4,
+          "netUnitsPerDay": 0.133
+        },
+        {
+          "productId": "P-1011",
+          "title": "Leather Gloves",
+          "category": "Accessories",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1004",
+          "title": "Merino Crew Sweater",
+          "category": "Knitwear",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1002",
+          "title": "Northridge Insulated Jacket",
+          "category": "Outerwear",
+          "unitsSold": 3,
+          "unitsReturned": 1,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1008",
+          "title": "Selvedge Slim Jeans",
+          "category": "Bottoms",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "unitsSold": 4,
+          "unitsReturned": 3,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1005",
+          "title": "Cable Knit Cardigan",
+          "category": "Knitwear",
+          "unitsSold": 1,
+          "unitsReturned": 0,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1006",
+          "title": "Organic Cotton Tee",
+          "category": "Tops",
+          "unitsSold": 1,
+          "unitsReturned": 0,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1009",
+          "title": "Utility Chino",
+          "category": "Bottoms",
+          "unitsSold": 1,
+          "unitsReturned": 1,
+          "netUnits": 0,
+          "netUnitsPerDay": 0
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025: No specific dates given, so the team default range (last 30 days) was used.\n\nTop sellers by net units sold:\n\n| Product | Category | Sold | Returned | Net |\n|---|---|---|---|---|\n| Wool Beanie | Accessories | 4 | 0 | 4 |\n| Northridge Insulated Jacket | Outerwear | 3 | 1 | 2 |\n| Leather Gloves | Accessories | 2 | 0 | 2 |\n| Merino Crew Sweater | Knitwear | 2 | 0 | 2 |\n| Selvedge Slim Jeans | Bottoms | 2 | 0 | 2 |\n| Alpine Down Parka | Outerwear | 4 | 3 | 1 |\n\nThe Wool Beanie leads with 4 net units sold; the Alpine Down Parka had 4 sales but 3 returns, leaving just 1 net unit.",
+    "seconds": 3.1395613000000013,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-12",
+    "question": "return rate on boots lately?",
+    "tool": "returns_by_product_and_reason",
+    "args": {
+      "product": "boots"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {
+        "product": "boots"
+      },
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "notice": "No products matching \"boots\". This store sells: Organic Cotton Tee, Utility Chino, Harbor Rain Shell, Linen Button Shirt, Selvedge Slim Jeans, Merino Crew Sweater, Northridge Insulated Jacket, Alpine Down Parka, Wool Beanie, Cable Knit Cardigan, Leather Gloves.",
+      "result": []
+    },
+    "answer": "Sep 27 – Oct 26, 2025 (default 30-day range): No products matching \"boots\" were found — this store doesn't sell boots, so there are no returns to report.",
+    "seconds": 3.5365141,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-13",
+    "question": "revenue by wk recently",
+    "tool": "sales_by_day",
+    "args": {
+      "groupBy": "week"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "start": "2025-09-27",
+          "end": "2025-09-28",
+          "orders": 0,
+          "units": 0,
+          "grossSales": 0,
+          "discounts": 0,
+          "netSales": 0
+        },
+        {
+          "start": "2025-09-29",
+          "end": "2025-10-05",
+          "orders": 2,
+          "units": 3,
+          "grossSales": 402,
+          "discounts": 23.85,
+          "netSales": 378.15
+        },
+        {
+          "start": "2025-10-06",
+          "end": "2025-10-12",
+          "orders": 3,
+          "units": 4,
+          "grossSales": 522,
+          "discounts": 0,
+          "netSales": 522
+        },
+        {
+          "start": "2025-10-13",
+          "end": "2025-10-19",
+          "orders": 3,
+          "units": 6,
+          "grossSales": 659,
+          "discounts": 23.6,
+          "netSales": 635.4
+        },
+        {
+          "start": "2025-10-20",
+          "end": "2025-10-26",
+          "orders": 4,
+          "units": 7,
+          "grossSales": 570,
+          "discounts": 26.5,
+          "netSales": 543.5
+        }
+      ]
+    },
+    "answer": "Sep 27–Oct 26, 2025: the team default range (last 30 days) was used since no specific dates were given.\n\n| Week | Orders | Units | Gross Sales | Discounts | Net Sales |\n|------|--------|-------|-------------|-----------|-----------|\n| Sep 27–28 | 0 | 0 | $0 | $0 | $0 |\n| Sep 29–Oct 5 | 2 | 3 | $402 | $23.85 | $378.15 |\n| Oct 6–12 | 3 | 4 | $522 | $0 | $522 |\n| Oct 13–19 | 3 | 6 | $659 | $23.60 | $635.40 |\n| Oct 20–26 | 4 | 7 | $570 | $26.50 | $543.50 |\n\nNet sales peaked the week of Oct 13–19 at $635.40.",
+    "seconds": 1.955614300000001,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-14",
+    "question": "repeat buyers lately on beanies and scarves",
+    "tool": "repeat_customer_share",
+    "args": {
+      "product": "beanies"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {
+        "product": "Wool Beanie"
+      },
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": {
+        "orders": 2,
+        "repeatOrders": 1,
+        "share": 0.5
+      }
+    },
+    "answer": "Sep 27 – Oct 26, 2025 (team default last-30-day range, since \"lately\" was vague): for Wool Beanie, there were 2 orders with 1 repeat order, so the repeat-customer share was 50%. Scarves weren't included in this single lookup — ask about scarves separately if you'd like that number.",
+    "seconds": 17.25327619999999,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-15",
+    "question": "which sweaters sell best",
+    "tool": "product_velocity",
+    "args": {
+      "category": "Knitwear"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {
+        "category": "Knitwear"
+      },
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "productId": "P-1004",
+          "title": "Merino Crew Sweater",
+          "category": "Knitwear",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1005",
+          "title": "Cable Knit Cardigan",
+          "category": "Knitwear",
+          "unitsSold": 1,
+          "unitsReturned": 0,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025: the team default range (last 30 days) was used.\n\nBest-selling sweaters (Knitwear):\n- Merino Crew Sweater — 2 units sold, 0 returned (net 2)\n- Cable Knit Cardigan — 1 unit sold, 0 returned (net 1)",
+    "seconds": 1.5421708999999972,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-16",
+    "question": "top return reasons for jakets in september",
+    "tool": "returns_by_product_and_reason",
+    "args": {
+      "start": "2025-09-01",
+      "end": "2025-09-30",
+      "category": "Outerwear"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-01",
+        "end": "2025-09-30",
+        "source": "explicit"
+      },
+      "filters": {
+        "category": "Outerwear"
+      },
+      "result": []
+    },
+    "answer": "Sep 1–30, 2025: No return data found for jackets (Outerwear) in September — the store had no matching returns in that period.",
+    "seconds": 3.366730599999981,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-17",
+    "question": "whats my pos vs online split",
+    "tool": "sales_by_day",
+    "args": {
+      "groupBy": "channel"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "channel": "Online Store",
+          "orders": 6,
+          "units": 9,
+          "grossSales": 1281,
+          "netSales": 1230.9
+        },
+        {
+          "channel": "Shop app",
+          "orders": 2,
+          "units": 4,
+          "grossSales": 363,
+          "netSales": 339.15
+        },
+        {
+          "channel": "Point of Sale",
+          "orders": 3,
+          "units": 6,
+          "grossSales": 290,
+          "netSales": 290
+        },
+        {
+          "channel": "Instagram",
+          "orders": 1,
+          "units": 1,
+          "grossSales": 219,
+          "netSales": 219
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025 (default 30-day range):\n\n- **Point of Sale:** $290.00 net sales (3 orders)\n- **Online Store:** $1,230.90 net sales (6 orders)\n\nPOS is about 14% of total net sales across all channels; Online Store is about 59%. (Shop app: $339.15; Instagram: $219.00.)",
+    "seconds": 1.4837919999999867,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-18",
+    "question": "repeat customer share",
+    "tool": "repeat_customer_share",
+    "args": {},
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": {
+        "orders": 12,
+        "repeatOrders": 5,
+        "share": 0.4167
+      }
+    },
+    "answer": "Sep 27 – Oct 26, 2025: Repeat customer share was 41.7% (5 repeat orders out of 12 total orders). The team default range (last 30 days) was used since no specific dates were given.",
+    "seconds": 1.2947131999999983,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-19",
+    "question": "refunds been bad lately?",
+    "tool": "returns_by_product_and_reason",
+    "args": {
+      "start": "2025-09-27",
+      "end": "2025-10-26"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "explicit"
+      },
+      "filters": {},
+      "result": [
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Defective",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Too large",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Too small",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1002",
+          "title": "Northridge Insulated Jacket",
+          "category": "Outerwear",
+          "reason": "Too small",
+          "units": 1,
+          "refunded": 135.15
+        },
+        {
+          "productId": "P-1002",
+          "title": "Northridge Insulated Jacket",
+          "category": "Outerwear",
+          "reason": "Changed mind",
+          "units": 1,
+          "refunded": 128.79
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025 (default 30-day range): 5 return units across 2 products, totaling $920.94 refunded.\n\n- Alpine Down Parka — 3 units ($657.00): Defective, Too large, Too small\n- Northridge Insulated Jacket — 2 units ($263.94): Too small, Changed mind",
+    "seconds": 1.4617865000000165,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-20",
+    "question": "how many fleece vests do i have left in stock",
+    "tool": null,
+    "answer": "I don't have inventory or stock data available, so I can't tell you how many fleece vests are left.",
+    "seconds": 2.270341799999995,
+    "rendered": true,
+    "correct": true,
+    "why": "no tool called; no-data message"
+  },
+  {
+    "id": "AQ-02",
+    "question": "best sellers this season",
+    "tool": "product_velocity",
+    "args": {},
+    "output": {
+      "dates": {
+        "start": "2025-09-27",
+        "end": "2025-10-26",
+        "source": "default"
+      },
+      "filters": {},
+      "dateNote": "No specific dates given, so the team default range (last 30 days) was used. Say so.",
+      "result": [
+        {
+          "productId": "P-1010",
+          "title": "Wool Beanie",
+          "category": "Accessories",
+          "unitsSold": 4,
+          "unitsReturned": 0,
+          "netUnits": 4,
+          "netUnitsPerDay": 0.133
+        },
+        {
+          "productId": "P-1011",
+          "title": "Leather Gloves",
+          "category": "Accessories",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1004",
+          "title": "Merino Crew Sweater",
+          "category": "Knitwear",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1002",
+          "title": "Northridge Insulated Jacket",
+          "category": "Outerwear",
+          "unitsSold": 3,
+          "unitsReturned": 1,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1008",
+          "title": "Selvedge Slim Jeans",
+          "category": "Bottoms",
+          "unitsSold": 2,
+          "unitsReturned": 0,
+          "netUnits": 2,
+          "netUnitsPerDay": 0.067
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "unitsSold": 4,
+          "unitsReturned": 3,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1005",
+          "title": "Cable Knit Cardigan",
+          "category": "Knitwear",
+          "unitsSold": 1,
+          "unitsReturned": 0,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1006",
+          "title": "Organic Cotton Tee",
+          "category": "Tops",
+          "unitsSold": 1,
+          "unitsReturned": 0,
+          "netUnits": 1,
+          "netUnitsPerDay": 0.033
+        },
+        {
+          "productId": "P-1009",
+          "title": "Utility Chino",
+          "category": "Bottoms",
+          "unitsSold": 1,
+          "unitsReturned": 1,
+          "netUnits": 0,
+          "netUnitsPerDay": 0
+        }
+      ]
+    },
+    "answer": "Sep 27 – Oct 26, 2025: No specific dates were given, so the team default range (last 30 days) was used.\n\nTop best sellers by net units sold:\n\n| Product | Category | Units Sold | Returned | Net Units |\n|---|---|---|---|---|\n| Wool Beanie | Accessories | 4 | 0 | 4 |\n| Northridge Insulated Jacket | Outerwear | 3 | 1 | 2 |\n| Merino Crew Sweater | Knitwear | 2 | 0 | 2 |\n| Leather Gloves | Accessories | 2 | 0 | 2 |\n| Selvedge Slim Jeans | Bottoms | 2 | 0 | 2 |\n| Alpine Down Parka | Outerwear | 4 | 3 | 1 |\n\nThe Wool Beanie leads with 4 net units sold and no returns.",
+    "seconds": 2.8556979,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-03",
+    "question": "which jackets came back the most last week",
+    "tool": "returns_by_product_and_reason",
+    "args": {
+      "period": "last_week",
+      "product": "jackets"
+    },
+    "output": {
+      "dates": {
+        "start": "2025-10-20",
+        "end": "2025-10-26",
+        "source": "period"
+      },
+      "filters": {
+        "category": "Outerwear"
+      },
+      "result": [
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Defective",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Too large",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1001",
+          "title": "Alpine Down Parka",
+          "category": "Outerwear",
+          "reason": "Too small",
+          "units": 1,
+          "refunded": 219
+        },
+        {
+          "productId": "P-1002",
+          "title": "Northridge Insulated Jacket",
+          "category": "Outerwear",
+          "reason": "Too small",
+          "units": 1,
+          "refunded": 135.15
+        }
+      ]
+    },
+    "answer": "Oct 20-26, 2025: The Alpine Down Parka came back the most, with 3 units returned (1 defective, 1 too large, 1 too small). The Northridge Insulated Jacket had 1 return (too small).\n\n- Alpine Down Parka — 3 units returned ($219 refunded each)\n- Northridge Insulated Jacket — 1 unit returned ($135.15 refunded)",
+    "seconds": 2.3333842999999996,
+    "rendered": true,
+    "correct": true,
+    "why": "right tool, dates and filter"
+  },
+  {
+    "id": "AQ-08",
+    "question": "how are returns doing",
+    "tool": null,
+    "answer": "Sorry, I couldn't work that one out. Could you ask it another way, e.g. \"returns last 30 days\"?",
+    "seconds": 6.8581012999999995,
+    "rendered": false,
+    "error": "The free AI model has hit its request limit for now. Please try again later. The dashboard page still works without it.",
+    "correct": false,
+    "why": "request failed: The free AI model has hit its request limit for now. Please try again later. The dashboard page still works without it."
+  }
+]

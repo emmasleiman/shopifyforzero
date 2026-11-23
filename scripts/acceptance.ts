@@ -186,7 +186,7 @@ async function main() {
       base = {
         id: row.id, question: row.question, tool: r.tool, args: r.args, output: r.output, answer: r.answer,
         seconds: outOfScope || !r.tool ? r.tText : r.tChart, rendered,
-        error: r.streamError?.match(/rate.?limit/i) ? r.streamError : undefined,
+        error: r.streamError?.match(/rate.?limit|request limit/i) ? r.streamError : undefined,
       };
     } catch (e) {
       base = { id: row.id, question: row.question, tool: null, args: null, answer: "", seconds: null, rendered: false, error: (e as Error).message };
